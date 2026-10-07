@@ -33,6 +33,7 @@
     open(text);
     bind();
     plantLayout();
+    guardZoom();
     if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
       navigator.serviceWorker.register('sw.js').catch(() => { /* 오프라인 저장 실패는 무시 */ });
     }
@@ -60,10 +61,10 @@
     $('edTestOut').classList.add('hidden');
     if (ed.view) ed.view.destroy();
     ed.view = new PLC.LadderView($('edLadder'), ed.sim, {
-      editable: true, toast, zoom: +store.get('app.zoom', 1) || 1, maxCols: 16,
+      editable: true, toast, zoom: +store.get('app.zoom2', 1) || 1, maxCols: 16,
       onEditState: (on, st) => syncEditButtons(on, st),
       onConvert: () => { $('edList').value = PLC.formatIL(ed.sim.program); saveLocal(); },
-      onZoom: (z) => { store.set('app.zoom', z.toFixed(2)); showZoom(z); },
+      onZoom: (z) => { store.set('app.zoom2', z.toFixed(2)); showZoom(z); },
       onPick: (dev) => pick(dev)
     });
     showZoom(ed.view.zoom);
@@ -153,6 +154,28 @@
     const target = wide ? $('side') : document.querySelector('[data-pane="monitor"]');
     if (host.parentElement !== target) target.appendChild(host);
     if (wide && ed.tab === 'monitor') switchTab('ladder');
+  }
+
+  // ================================================================== 페이지 확대 막기 (휴대폰)
+  /** iOS 는 user-scalable=no 를 무시하고 두 손가락 · 입력칸 초점으로 페이지를 확대한다.
+   *  래더 밖의 핀치를 막고, 입력이 끝나면 확대를 원래대로 되돌린다 (래더 확대는 래더 안에서만). */
+  function guardZoom() {
+    const blockGesture = (e) => e.preventDefault();
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach((t) => document.addEventListener(t, blockGesture, { passive: false }));
+    document.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 1 && !e.target.closest('.lv-scroll')) e.preventDefault();
+    }, { passive: false });
+    const meta = document.querySelector('meta[name=viewport]');
+    const base = meta ? meta.getAttribute('content') : '';
+    const resetZoom = () => {
+      if (!meta) return;
+      if (window.visualViewport && window.visualViewport.scale <= 1.001) return;
+      meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0');
+      setTimeout(() => meta.setAttribute('content', base), 60);
+      window.scrollTo(0, 0);
+    };
+    document.addEventListener('focusout', (e) => { if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) setTimeout(resetZoom, 80); });
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', () => { if (!document.activeElement || !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) resetZoom(); });
   }
 
   // ================================================================== 현장 설비 패널 (아래)
@@ -730,7 +753,9 @@
     st = st || {};
     const q = (n) => document.querySelector(`[data-tool="${n}"]`);
     const eb = q('edit');
-    if (eb) { eb.classList.toggle('on', !!on); eb.title = on ? '편집 끝내기 (변환되지 않은 내용은 ' + V.convertName + ' 후 반영)' : '편집 모드 켜기 — 회로를 고칠 수 있습니다'; }
+    const tb = $('ldTools');
+    if (tb) tb.classList.toggle('editing', !!on);
+    if (eb) { const lb = eb.querySelector('.lbl'); if (lb) lb.textContent = on ? '완료' : '편집'; eb.classList.toggle('on', !!on); eb.title = on ? '편집 끝내기 (변환되지 않은 내용은 ' + V.convertName + ' 후 반영)' : '편집 모드 켜기 — 회로를 고칠 수 있습니다'; }
     const cb = q('convert');
     if (cb) { cb.disabled = !on; cb.classList.toggle('dirty', !!(on && st.dirty)); }
     const mode = document.querySelector('[data-f=ldmode]');

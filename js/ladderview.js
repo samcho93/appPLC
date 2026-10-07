@@ -14,7 +14,7 @@
 
   const CW = 70, CH = 52, RAIL = 36, MID = 25, NOTE_H = 20;
   /** 출력 열 폭 — 좁은 화면에서는 조금 줄인다 */
-  const outW = () => (typeof window !== 'undefined' && window.innerWidth < 520 ? 160 : 190);
+  const outW = () => (typeof window !== 'undefined' && window.innerWidth < 520 ? 150 : 190);
 
   // ------------------------------------------------------------------ 통전 계산
   function computeFlow(g, evalElem) {
@@ -126,7 +126,7 @@
       const avail = this.scroll.clientWidth || this.host.clientWidth || 0;
       if (avail < 120) return 0;
       const maxCols = this.opts.maxCols || 11;
-      return Math.max(3, Math.min(maxCols, Math.floor((avail / 0.85 - RAIL - outW() - 30) / CW)));
+      return Math.max(3, Math.min(maxCols, Math.floor((avail / (avail < 600 ? 0.74 : 0.85) - RAIL - outW() - 30) / CW)));
     }
 
     // ---------------------------------------------------------------- 확대 · 축소
@@ -540,6 +540,8 @@
         <div class="hint">${esc(hint || '')}</div>`;
       this.host.appendChild(box);
       this.askBox = box;
+      // 입력창(위쪽)이 고른 칸을 가리지 않게 래더를 그만큼 아래로 민다
+      this.scroll.style.paddingTop = (box.offsetHeight + 8) + 'px';
       const inp = box.querySelector('input');
       inp.focus();
       const len = inp.value.length;
@@ -559,7 +561,7 @@
       box.querySelector('.cancel').onclick = () => this.closeAsk();
     }
     closeAsk() {
-      if (this.askBox) { this.askBox.remove(); this.askBox = null; }
+      if (this.askBox) { this.askBox.remove(); this.askBox = null; this.scroll.style.paddingTop = ''; }
     }
     /** "X0" · "LD X0" · "OUT Y20" · "MOV K10 D0" · "= D0 K5" 입력 처리 (제조사 표기는 PLC.VENDOR) */
     enterText(txt, kind) {

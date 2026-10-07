@@ -380,6 +380,8 @@
       const set = (d, v) => { this.plant.set(d.name, v); this.update(); if (this.opts.onAct) this.opts.onAct(d); };
       // 짧게 누르면 PLC 가 한 스캔도 못 보고 지나가므로, 최소 150ms 는 눌린 상태로 둔다
       const MIN_PRESS = 150;
+      // 카드 어디를 눌러도 버튼 · 스위치가 동작한다 (단추 · 입력칸 · 슬라이더는 제외)
+      const hit = (e, it, sel) => e.target.closest(sel) || (!e.target.closest('button,input,select,textarea,[data-act],[data-set]') && it.el.querySelector(sel));
       const press = (d, v) => {
         if (v) { d._pressAt = performance.now(); set(d, 1); return; }
         const dt = performance.now() - (d._pressAt || 0);
@@ -389,12 +391,12 @@
       this.host.addEventListener('pointerdown', (e) => {
         const it = this.devAt(e);
         if (!it) return;
-        if (e.target.closest('[data-press]')) { press(it.d, 1); e.target.setPointerCapture && e.target.setPointerCapture(e.pointerId); }
-        else if (e.target.closest('[data-toggle]')) set(it.d, it.d.on ? 0 : 1);
+        if (hit(e, it, '[data-press]')) { e.preventDefault(); press(it.d, 1); it.el.classList.add('pressed'); try { it.el.setPointerCapture(e.pointerId); } catch (err) { /* 무시 */ } }
+        else if (hit(e, it, '[data-toggle]')) { e.preventDefault(); set(it.d, it.d.on ? 0 : 1); }
       });
       const release = (e) => {
         const it = this.devAt(e);
-        if (it && e.target.closest('[data-press]')) press(it.d, 0);
+        if (it && it.el.classList.contains('pressed')) { it.el.classList.remove('pressed'); press(it.d, 0); }
       };
       this.host.addEventListener('pointerup', release);
       this.host.addEventListener('pointercancel', release);
