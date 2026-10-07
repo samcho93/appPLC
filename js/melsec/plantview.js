@@ -377,6 +377,9 @@
       return { d: this.plant.devices[+box.dataset.i], el: box };
     }
     bind() {
+      // 이 조작판이 붙인 이벤트는 destroy() 때 모두 뗀다 (같은 자리에 새 조작판을 만들 때 옛 처리기가 남지 않게)
+      this.ac = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const on = (target, type, fn, opt) => target.addEventListener(type, fn, Object.assign({}, opt || {}, this.ac ? { signal: this.ac.signal } : {}));
       const set = (d, v) => { this.plant.set(d.name, v); this.update(); if (this.opts.onAct) this.opts.onAct(d); };
       // 짧게 누르면 PLC 가 한 스캔도 못 보고 지나가므로, 최소 150ms 는 눌린 상태로 둔다
       const MIN_PRESS = 150;
@@ -388,26 +391,31 @@
         if (dt >= MIN_PRESS) set(d, 0);
         else setTimeout(() => set(d, 0), MIN_PRESS - dt);
       };
-      this.host.addEventListener('pointerdown', (e) => {
+      // 누르고 있는 버튼: 손가락(포인터)마다 따로 기억했다가, 어디서 손을 떼든 반드시 놓는다
+      const held = new Map();
+      const releaseId = (id) => { const h = held.get(id); if (!h) return; held.delete(id); h.el.classList.remove('pressed'); press(h.d, 0); };
+      const releaseAll = () => [...held.keys()].forEach(releaseId);
+      on(this.host, 'pointerdown', (e) => {
         const it = this.devAt(e);
         if (!it) return;
-        if (hit(e, it, '[data-press]')) { e.preventDefault(); press(it.d, 1); it.el.classList.add('pressed'); try { it.el.setPointerCapture(e.pointerId); } catch (err) { /* 무시 */ } }
+        if (hit(e, it, '[data-press]')) { e.preventDefault(); releaseId(e.pointerId); held.set(e.pointerId, { d: it.d, el: it.el }); press(it.d, 1); it.el.classList.add('pressed'); }
         else if (hit(e, it, '[data-toggle]')) { e.preventDefault(); set(it.d, it.d.on ? 0 : 1); }
       });
-      const release = (e) => {
-        const it = this.devAt(e);
-        if (it && it.el.classList.contains('pressed')) { it.el.classList.remove('pressed'); press(it.d, 0); }
-      };
-      this.host.addEventListener('pointerup', release);
-      this.host.addEventListener('pointercancel', release);
-      this.host.addEventListener('pointerleave', (e) => { if (e.buttons) release(e); });
-      this.host.addEventListener('click', (e) => {
+      on(window, 'pointerup', (e) => releaseId(e.pointerId), true);
+      on(window, 'pointercancel', (e) => releaseId(e.pointerId), true);
+      on(window, 'touchend', (e) => { if (!e.touches || !e.touches.length) releaseAll(); }, true);
+      on(window, 'touchcancel', releaseAll, true);
+      on(window, 'blur', releaseAll);
+      on(document, 'visibilitychange', () => { if (document.visibilityState === 'hidden') releaseAll(); });
+      on(this.host, 'contextmenu', (e) => { if (e.target.closest('.pv-dev')) e.preventDefault(); });
+      this.releaseAll = releaseAll;
+      on(this.host, 'click', (e) => {
         const it = this.devAt(e);
         if (!it) return;
         const a = e.target.closest('[data-act]');
         if (a) { const v = V[it.d.type]; if (v && v.act) { v.act(it.d, a.dataset.act, this.plant, it.el); this.update(); } }
       });
-      this.host.addEventListener('input', (e) => {
+      on(this.host, 'input', (e) => {
         const it = this.devAt(e);
         const s = e.target.closest('[data-set]');
         if (!it || !s) return;
@@ -415,7 +423,7 @@
         if (v && v.set) v.set(it.d, s.dataset.set, s.value, this.plant);
         this.update();
       });
-      this.host.addEventListener('keydown', (e) => {
+      on(this.host, 'keydown', (e) => {
         if (e.key !== 'Enter' || !e.target.closest('[data-send]')) return;
         const it = this.devAt(e);
         if (!it) return;
@@ -423,7 +431,11 @@
         if (v && v.act) { v.act(it.d, 'send', this.plant, it.el); this.update(); }
       });
     }
-    destroy() { this.host.innerHTML = ''; }
+    destroy() {
+      if (this.releaseAll) this.releaseAll();
+      if (this.ac) this.ac.abort();
+      this.host.innerHTML = '';
+    }
   }
   PLC.PlantView = PlantView;
   PLC.PLANT_VIEWS = V;

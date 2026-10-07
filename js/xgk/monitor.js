@@ -220,6 +220,10 @@
 
     // ---------------------------------------------------------------- 이벤트
     bind() {
+      const sp0 = this.host.querySelector('[data-act=speed]');
+      if (sp0) sp0.onchange = () => { this.sim.speed = +sp0.value; };
+      if (this._bound) return;     // host 는 그대로이고 내용만 바뀌므로 처리기는 한 번만 붙인다
+      this._bound = true;
       this.host.addEventListener('click', (e) => {
         const b = e.target.closest('[data-act]');
         if (!b) return;

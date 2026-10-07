@@ -134,11 +134,13 @@
     if (!sim) return;
     const cpu = sim.cpu;
     const run = cpu.state === 'RUN';
+    const paused = run && !!sim.paused;
     const st = $('status');
     const rb = st.querySelector('[data-act=run]');
-    rb.classList.toggle('on', run);
+    rb.classList.toggle('on', run && !paused);
     rb.classList.toggle('off', !run);
-    st.querySelector('[data-f=runtext]').textContent = cpu.state;
+    rb.classList.toggle('pause', paused);
+    st.querySelector('[data-f=runtext]').textContent = paused ? 'PAUSE' : cpu.state;
     st.querySelector('[data-led=run]').classList.toggle('on', run);
     st.querySelector('[data-led=err]').classList.toggle('on', cpu.state === 'ERROR');
     st.querySelector('[data-f=scan]').textContent = `${cpu.scanCount}스캔 · ${(cpu.timeMs / 1000).toFixed(1)}s · ${sim.scanMs}ms`;
@@ -699,6 +701,7 @@
   function bind() {
     document.addEventListener('click', (e) => {
       const a = e.target.closest('[data-act]');
+      if (a && a.closest('#monitorHost')) { setTimeout(updateStatus, 0); return; }   // 모니터 패널 단추는 패널이 처리한다
       if (a) {
         switch (a.dataset.act) {
           case 'new': if (confirm('새 프로그램을 시작할까요? 저장하지 않은 내용은 사라집니다.')) { open(DEFAULT_PROJECT); saveLocal(); switchTab('ladder'); } break;
@@ -711,9 +714,16 @@
           case 'more': openModal('⋯ 더 보기', '<div class="more-list"><button class="btn" data-act="export">⬇ 내보내기</button><button class="btn" data-act="share">🔗 공유 링크</button><button class="btn" data-act="help">❓ 도움말</button><button class="btn" data-act="theme">◐ 라이트 / 다크</button><button class="btn" data-act="vendor">🔁 PLC 기종 바꾸기</button><button class="btn" data-act="plant">🔌 설비 패널 접기/펴기</button></div>'); break;
           case 'vendor': vendorDialog(); break;
           case 'theme': closeModal(); applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'); break;
-          case 'run': if (ed.sim.cpu.state === 'RUN') ed.sim.stop(); else { ed.sim.run(); if (ed.sim.cpu.state !== 'RUN') toast('RUN 할 수 없습니다 — 프로그램 오류를 고치세요', true); } updateStatus(); break;
-          case 'reset': ed.sim.reset(); ed.sim.run(); updateStatus(); toast('리셋했습니다'); break;
-          case 'step': ed.sim.stop(); ed.sim.step(1); ed.view.update(); ed.plant.update(); updateStatus(); break;
+          case 'run':
+            if (ed.sim.cpu.state === 'RUN' && !ed.sim.paused) ed.sim.stop();
+            else { ed.sim.paused = false; if (ed.sim.cpu.state !== 'RUN' && !ed.sim.run()) toast('RUN 할 수 없습니다 — 프로그램 오류를 고치세요', true); }
+            updateStatus(); break;
+          case 'reset': ed.sim.paused = false; ed.sim.reset(); ed.sim.run(); updateStatus(); toast('리셋했습니다'); break;
+          case 'step':
+            // 1 스캔: 실시간 진행을 멈추고(일시 정지) 한 스캔만 실행한다. RUN 을 누르면 이어서 돈다
+            ed.sim.paused = true;
+            if (ed.sim.cpu.state !== 'RUN' && !ed.sim.run()) { toast('RUN 할 수 없습니다 — 프로그램 오류를 고치세요', true); updateStatus(); break; }
+            ed.sim.step(1); ed.view.update(); ed.plant.update(); updateStatus(); break;
           case 'plant': closeModal(); togglePlant(); break;
         }
         return;

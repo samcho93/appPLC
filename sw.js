@@ -1,7 +1,7 @@
 /* appPLC 서비스 워커 — 오프라인에서도 열리도록 앱 파일을 저장해 둔다
  *  네트워크를 먼저 쓰고(항상 최신), 연결이 없으면 저장본을 준다 (network-first)
  */
-const VERSION = 'appplc-v3';
+const VERSION = 'appplc-v4';
 const SHELL = [
   './', './index.html', './manifest.webmanifest', './css/app.css',
   './js/ladderview.js', './js/app.js',
