@@ -1,4 +1,5 @@
-/* MELSEC 강좌의 래더 실습 예제 — tools/harvest-examples.js 로 자동 생성 (손으로 고치지 마세요) */
+/* MELSEC 강좌의 래더 실습 예제 — tools/harvest-examples.js 로 자동 생성 (손으로 고치지 마세요)
+ * 스위치는 "누르면 ON" 배선으로 바꿨다 (정지 · 비상정지는 래더에서 b 접점으로 끊는다) — tools/nc-convert.js */
 (function (root) {
   'use strict';
   const PLC = root.PLC = root.PLC || {};
@@ -12,7 +13,7 @@
   "title": "첫 실습: 버튼을 누르면 램프가 켜진다",
   "desc": "버튼을 누르는 동안만 램프가 켜집니다. 누르면 래더의 접점과 선이 초록색으로 바뀌는데, 이것이 통전(전기가 흐름) 표시입니다. ▶ RUN / ■ STOP — PLC 의 운전 스위치입니다. STOP 하면 출력이 모두 꺼집니다. ⟲ — CPU 리셋 (모든 값을 처음 상태로) 📝 리스트 …",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nLAMP RUN Y20 color=green label=운전등",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nLAMP RUN Y20 color=green label=운전등",
   "program": "; 기동 버튼(X0)을 누르는 동안 운전등(Y20)이 켜진다\nLD X0\nOUT Y20\nEND",
   "test": "START=1 -> Y20=1\nSTART=0 -> Y20=0",
   "monitor": "X0 X1 Y20"
@@ -26,8 +27,8 @@
   "title": "기동 · 정지 자기유지 회로",
   "desc": "기동 버튼을 눌렀다 떼도 램프가 계속 켜져 있습니다. 두 번째 줄의 OR Y20 이 자기 출력을 다시 입력으로 쓰는 자기유지입니다 (4장에서 자세히 배웁니다). 정지 버튼을 누르면 X1 이 OFF 가 되어 회로가 끊어집니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nLAMP RUN Y20 color=green label=운전등",
-  "program": "; 기동하면 계속 운전, 정지를 누르면 멈춘다\n@X0 기동 버튼\n@X1 정지 버튼\nLD X0\nOR Y20\nAND X1\nOUT Y20\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nLAMP RUN Y20 color=green label=운전등",
+  "program": "; 기동하면 계속 운전, 정지를 누르면 멈춘다\n@X0 기동 버튼\n@X1 정지 버튼\nLD X0\nOR Y20\nANI X1\nOUT Y20\nEND",
   "test": "START=1 -> Y20=1\nSTART=0 -> Y20=1\nSTOP=1 -> Y20=0\nSTOP=0 -> Y20=0",
   "monitor": "X0 X1 Y20"
  },
@@ -96,7 +97,7 @@
   "title": "① 릴레이 접점 하나 그대로 — 누르는 동안만",
   "desc": "자기 접점이 없으면 손을 떼는 순간 꺼집니다. 릴레이 회로에서 기동 버튼만 있고 MC-a 접점이 없는 상태와 같습니다.",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPB START2 X3 color=green label=현장기동\nLAMP RUN Y20 color=green label=운전등\nLAMP STOPL Y21 color=red label=정지등",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPB START2 X3 color=green label=현장기동\nLAMP RUN Y20 color=green label=운전등\nLAMP STOPL Y21 color=red label=정지등",
   "program": "; 기동 버튼(X0)을 누르는 동안만 운전등(Y20)이 켜진다\nLD X0\nOUT Y20\nEND",
   "test": "START=1 -> Y20=1\nSTART=0 -> Y20=0",
   "monitor": "X0 Y20"
@@ -110,8 +111,8 @@
   "title": "② 자기유지 — MC-a 접점을 OR 로",
   "desc": "릴레이 회로의 MC-a 자기 접점이 래더에서는 OR Y20 한 줄입니다. 전선 한 가닥이 명령 한 줄로 바뀐 것입니다. 기동 버튼을 눌렀다 떼도 계속 운전합니다.",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPB START2 X3 color=green label=현장기동\nLAMP RUN Y20 color=green label=운전등\nLAMP STOPL Y21 color=red label=정지등",
-  "program": "; 기동하면 계속 운전, 정지를 누르면 멈춘다 (자기유지)\n@X0 기동 PB1\n@X1 정지 PB2\nLD X0\nOR Y20\nAND X1\nOUT Y20\nEND",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPB START2 X3 color=green label=현장기동\nLAMP RUN Y20 color=green label=운전등\nLAMP STOPL Y21 color=red label=정지등",
+  "program": "; 기동하면 계속 운전, 정지를 누르면 멈춘다 (자기유지)\n@X0 기동 PB1\n@X1 정지 PB2\nLD X0\nOR Y20\nANI X1\nOUT Y20\nEND",
   "test": "START=1 -> Y20=1\nSTART=0 -> Y20=1\nSTOP=1 -> Y20=0\nSTOP=0 -> Y20=0",
   "monitor": "X0 X1 Y20"
  },
@@ -124,8 +125,8 @@
   "title": "③ 비상정지를 한 줄 더 — 배선은 그대로",
   "desc": "릴레이 제어반이었다면 패널을 열고 전선을 하나 더 넣어야 했습니다. PLC 는 AND X2 한 줄만 추가하면 끝입니다. 이것이 PLC 의 가장 큰 장점입니다.",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPB START2 X3 color=green label=현장기동\nLAMP RUN Y20 color=green label=운전등\nLAMP STOPL Y21 color=red label=정지등",
-  "program": "; 비상정지(X2)를 누르면 즉시 멈춘다\nLD X0\nOR Y20\nAND X1\nAND X2\nOUT Y20\nEND",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPB START2 X3 color=green label=현장기동\nLAMP RUN Y20 color=green label=운전등\nLAMP STOPL Y21 color=red label=정지등",
+  "program": "; 비상정지(X2)를 누르면 즉시 멈춘다\nLD X0\nOR Y20\nANI X1\nANI X2\nOUT Y20\nEND",
   "test": "START=1 -> Y20=1\nSTART=0 -> Y20=1\nEMG1=1 -> Y20=0\nEMG1=0 -> Y20=0\nSTART=1 -> Y20=1",
   "monitor": "X0 X1 X2 Y20"
  },
@@ -138,8 +139,8 @@
   "title": "④ 정지등 추가 — 부품을 사지 않고 기능을 늘린다",
   "desc": "릴레이 제어반이라면 릴레이를 한 개 더 사서 달아야 합니다. PLC 는 LDI Y20(b 접점) 두 줄로 끝납니다. 출력을 다시 조건으로 읽을 수 있는 것도 PLC 의 편리한 점입니다.",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPB START2 X3 color=green label=현장기동\nLAMP RUN Y20 color=green label=운전등\nLAMP STOPL Y21 color=red label=정지등",
-  "program": "; 운전 중이 아니면 정지등(Y21)을 켠다\nLD X0\nOR Y20\nAND X1\nAND X2\nOUT Y20\n\nLDI Y20\nOUT Y21\nEND",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPB START2 X3 color=green label=현장기동\nLAMP RUN Y20 color=green label=운전등\nLAMP STOPL Y21 color=red label=정지등",
+  "program": "; 운전 중이 아니면 정지등(Y21)을 켠다\nLD X0\nOR Y20\nANI X1\nANI X2\nOUT Y20\n\nLDI Y20\nOUT Y21\nEND",
   "test": "-> Y20=0 Y21=1\nSTART=1 -> Y20=1 Y21=0\nSTOP=1 -> Y20=0 Y21=1",
   "monitor": "Y20 Y21"
  },
@@ -194,7 +195,7 @@
   "title": "① 센서 입력 확인 — 물체를 감지하면 램프",
   "desc": "조작판의 근접센서를 눌러 물체 있음 · 없음을 바꿔 보세요. 센서가 ON 되면 입력 모듈 LED 와 래더 접점이 함께 초록색이 됩니다. 배선이 맞는지 확인할 때는 프로그램보다 먼저 모듈 LED 를 보세요.",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPROX PRX1 X4 label=근접센서NPN\nLS LS1 X5 label=리밋a접점\nLS LS2 X6 nc=1 label=리밋b접점\nPB FWD X8 color=green label=정회전\nPB REV X9 color=yellow label=역회전\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nMOTOR MT1 fwd=Y22 rev=Y23 label=컨베이어모터\nBUZ BZ1 Y2F label=경보부저",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPROX PRX1 X4 label=근접센서NPN\nLS LS1 X5 label=리밋a접점\nLS LS2 X6 label=리밋b접점\nPB FWD X8 color=green label=정회전\nPB REV X9 color=yellow label=역회전\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nMOTOR MT1 fwd=Y22 rev=Y23 label=컨베이어모터\nBUZ BZ1 Y2F label=경보부저",
   "program": "; 근접 센서(X4)가 물체를 보면 운전등이 켜진다\nLD X4\nOUT Y20\nEND",
   "test": "PRX1=1 -> Y20=1\nPRX1=0 -> Y20=0",
   "monitor": "X4 Y20"
@@ -208,8 +209,8 @@
   "title": "② 같은 스위치, 배선만 다르면",
   "desc": "두 리밋 스위치를 각각 눌러 보세요. b 접점으로 배선된 X6 은 평소에 ON 이고 누르면 OFF 가 됩니다. 정지 · 비상정지 · 안전 도어는 이렇게 배선해야 선이 끊어질 때 자동으로 정지합니다 (페일 세이프).",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPROX PRX1 X4 label=근접센서NPN\nLS LS1 X5 label=리밋a접점\nLS LS2 X6 nc=1 label=리밋b접점\nPB FWD X8 color=green label=정회전\nPB REV X9 color=yellow label=역회전\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nMOTOR MT1 fwd=Y22 rev=Y23 label=컨베이어모터\nBUZ BZ1 Y2F label=경보부저",
-  "program": "; 리밋 a접점(X5) — 누르면 X5 가 ON\nLD X5\nOUT Y20\n\n; 리밋 b접점(X6) — 평소 ON, 누르면 OFF\nLD X6\nOUT Y21\nEND",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPROX PRX1 X4 label=근접센서NPN\nLS LS1 X5 label=리밋a접점\nLS LS2 X6 label=리밋b접점\nPB FWD X8 color=green label=정회전\nPB REV X9 color=yellow label=역회전\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nMOTOR MT1 fwd=Y22 rev=Y23 label=컨베이어모터\nBUZ BZ1 Y2F label=경보부저",
+  "program": "; 리밋 a접점(X5) — 누르면 X5 가 ON\nLD X5\nOUT Y20\n\n; 리밋 b접점(X6) — 평소 ON, 누르면 OFF\nLDI X6\nOUT Y21\nEND",
   "test": "-> Y20=0 Y21=1\nLS1=1 -> Y20=1 Y21=1\nLS2=1 -> Y20=1 Y21=0\nLS1=0 LS2=0 -> Y20=0 Y21=1",
   "monitor": "X5 X6 Y20 Y21"
  },
@@ -222,7 +223,7 @@
   "title": "③ 모터 정 · 역 인터록 — 단락을 막는 배선과 프로그램",
   "desc": "정회전 버튼을 누른 채 역회전 버튼을 눌러도 역회전은 켜지지 않습니다. 실제 설비에서 전자접촉기 두 개가 동시에 붙으면 전원이 단락(합선) 되어 큰 사고가 납니다. 그래서 프로그램 인터록과 함께 MC 의 b 접점을 서로 물리는 기계적 인터록도 반드시 배선합니다.",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPROX PRX1 X4 label=근접센서NPN\nLS LS1 X5 label=리밋a접점\nLS LS2 X6 nc=1 label=리밋b접점\nPB FWD X8 color=green label=정회전\nPB REV X9 color=yellow label=역회전\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nMOTOR MT1 fwd=Y22 rev=Y23 label=컨베이어모터\nBUZ BZ1 Y2F label=경보부저",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPROX PRX1 X4 label=근접센서NPN\nLS LS1 X5 label=리밋a접점\nLS LS2 X6 label=리밋b접점\nPB FWD X8 color=green label=정회전\nPB REV X9 color=yellow label=역회전\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nMOTOR MT1 fwd=Y22 rev=Y23 label=컨베이어모터\nBUZ BZ1 Y2F label=경보부저",
   "program": "; 정회전 — 역회전이 켜져 있으면 안 된다\nLD X8\nANI Y23\nOUT Y22\n\n; 역회전 — 정회전이 켜져 있으면 안 된다\nLD X9\nANI Y22\nOUT Y23\nEND",
   "test": "FWD=1 -> Y22=1 Y23=0\nREV=1 -> Y22=1 Y23=0\nt=1 -> MT1>2500\nFWD=0 -> Y22=0 Y23=1",
   "monitor": "Y22 Y23 X8 X9"
@@ -236,8 +237,8 @@
   "title": "④ 비상정지 · 경보 회로",
   "desc": "비상정지를 누르면 운전이 멈추고 경보등 · 부저가 울립니다. 비상정지를 풀어도 다시 기동 버튼을 눌러야 운전이 시작됩니다 — 이것을 리셋 후 재기동 원칙이라고 합니다. 위험 설비에서 전원 복구만으로 저절로 움직이면 절대 안 됩니다.",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPROX PRX1 X4 label=근접센서NPN\nLS LS1 X5 label=리밋a접점\nLS LS2 X6 nc=1 label=리밋b접점\nPB FWD X8 color=green label=정회전\nPB REV X9 color=yellow label=역회전\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nMOTOR MT1 fwd=Y22 rev=Y23 label=컨베이어모터\nBUZ BZ1 Y2F label=경보부저",
-  "program": "; 기동 · 정지 · 비상정지 (X1 · X2 는 b 접점 배선)\nLD X0\nOR Y20\nAND X1\nAND X2\nOUT Y20\n\n; 비상정지가 눌리면 경보등과 부저\nLDI X2\nOUT Y21\nLDI X2\nOUT Y2F\nEND",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nEMG EMG1 X2 label=비상정지\nPROX PRX1 X4 label=근접센서NPN\nLS LS1 X5 label=리밋a접점\nLS LS2 X6 label=리밋b접점\nPB FWD X8 color=green label=정회전\nPB REV X9 color=yellow label=역회전\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nMOTOR MT1 fwd=Y22 rev=Y23 label=컨베이어모터\nBUZ BZ1 Y2F label=경보부저",
+  "program": "; 기동 · 정지 · 비상정지 (X1 · X2 는 b 접점 배선)\nLD X0\nOR Y20\nANI X1\nANI X2\nOUT Y20\n\n; 비상정지가 눌리면 경보등과 부저\nLD X2\nOUT Y21\nLD X2\nOUT Y2F\nEND",
   "test": "START=1 -> Y20=1 Y21=0 BZ1=0\nSTART=0 EMG1=1 -> Y20=0 Y21=1 BZ1=1\nEMG1=0 -> Y20=0 Y21=0 BZ1=0\nSTART=1 -> Y20=1",
   "monitor": "X2 Y20 Y21 Y2F"
  },
@@ -292,8 +293,8 @@
   "title": "④ 할당표대로 설비를 배치하고 프로그램 만들기",
   "desc": "조작판의 장비 이름이 할당표의 기호와 똑같습니다. 이렇게 이름을 맞춰 두면 배선표 · 조작판 · 프로그램 코멘트가 한눈에 이어집니다. ⤢ 에디터 → 🔌 현장 설비 탭에서 배치를 직접 바꿔 볼 수 있습니다.",
   "rack": "",
-  "io": "PB PB1 X0 color=green label=기동PB1\nPB PB2 X1 nc=1 color=red label=정지PB2\nEMG EMS X2 label=비상정지EMS\nPHOTO PH1 X3 label=제품감지PH1\nLAMP PL1 Y20 color=green label=운전등PL1\nLAMP PL2 Y21 color=red label=경보등PL2\nBUZ BZ1 Y22 label=경보부저BZ1",
-  "program": "; 기동 · 정지 · 비상정지 (PB2 · EMS 는 b 접점 배선)\nLD X0\nOR Y20\nAND X1\nAND X2\nOUT Y20\n\n; 운전 중에 제품이 지나가면 부저\nLD X3\nAND Y20\nOUT Y22\n\n; 비상정지가 눌리면 경보등\nLDI X2\nOUT Y21\nEND",
+  "io": "PB PB1 X0 color=green label=기동PB1\nPB PB2 X1 color=red label=정지PB2\nEMG EMS X2 label=비상정지EMS\nPHOTO PH1 X3 label=제품감지PH1\nLAMP PL1 Y20 color=green label=운전등PL1\nLAMP PL2 Y21 color=red label=경보등PL2\nBUZ BZ1 Y22 label=경보부저BZ1",
+  "program": "; 기동 · 정지 · 비상정지 (PB2 · EMS 는 b 접점 배선)\nLD X0\nOR Y20\nANI X1\nANI X2\nOUT Y20\n\n; 운전 중에 제품이 지나가면 부저\nLD X3\nAND Y20\nOUT Y22\n\n; 비상정지가 눌리면 경보등\nLD X2\nOUT Y21\nEND",
   "test": "-> Y20=0\nPB1=1 -> Y20=1\nPB1=0 PH1=1 -> Y22=1\nPH1=0 -> Y22=0\nPB2=1 -> Y20=0\nPB2=0 PB1=1 -> Y20=1\nPB1=0 EMS=1 -> Y20=0 Y21=1 Y22=0",
   "monitor": "X0 X1 X2 X3 Y20 Y22"
  },
@@ -306,8 +307,8 @@
   "title": "① 조건은 M 에 모으고, 출력은 M 으로 낸다",
   "desc": "운전 조건을 M0 에 한 번 만들어 두면, 뒤에서는 LD M0 만으로 몇 개든 출력을 낼 수 있습니다. 조건이 바뀌어도 고칠 곳이 한 군데뿐입니다. 실무 프로그램은 거의 이런 모양입니다.",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nPB PB2 X2 color=blue label=보조버튼\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nBUZ BZ1 Y2F label=부저",
-  "program": "; 운전 조건을 내부 릴레이 M0 에 한 번만 모은다\nLD X0\nOR M0\nAND X1\nOUT M0\n\n; M0 하나로 여러 출력을 낸다\nLD M0\nOUT Y20\n\nLDI M0\nOUT Y21\nLDI M0\nOUT Y2F\nEND",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nPB PB2 X2 color=blue label=보조버튼\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nBUZ BZ1 Y2F label=부저",
+  "program": "; 운전 조건을 내부 릴레이 M0 에 한 번만 모은다\nLD X0\nOR M0\nANI X1\nOUT M0\n\n; M0 하나로 여러 출력을 낸다\nLD M0\nOUT Y20\n\nLDI M0\nOUT Y21\nLDI M0\nOUT Y2F\nEND",
   "test": "-> M0=0 Y20=0 Y21=1 BZ1=1\nSTART=1 -> M0=1 Y20=1 Y21=0 BZ1=0\nSTART=0 -> M0=1 Y20=1\nSTOP=1 -> M0=0 Y20=0 Y21=1",
   "monitor": "X0 X1 M0 Y20 Y21 Y2F"
  },
@@ -320,7 +321,7 @@
   "title": "② 이중 코일 — 앞 회로가 없는 것처럼 된다",
   "desc": "기동 버튼(X0)을 눌러도 램프가 켜지지 않습니다. 앞 회로가 Y20 을 ON 해도 같은 스캔의 뒤 회로가 곧바로 OFF 로 덮어쓰기 때문입니다. 실제 결과는 Y20 = X2 입니다. 래더를 보면 분명히 두 군데에 있는데 한쪽이 안 먹으니 원인을 찾기가 아주 어렵습니다.",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nPB PB2 X2 color=blue label=보조버튼\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nBUZ BZ1 Y2F label=부저",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nPB PB2 X2 color=blue label=보조버튼\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nBUZ BZ1 Y2F label=부저",
   "program": "; 앞 회로: 기동 버튼으로 켠다 … 처럼 보이지만\nLD X0\nOUT Y20\n\n; 뒤 회로: 보조 버튼으로 켠다 → 이것만 살아남는다\nLD X2\nOUT Y20\nEND",
   "test": "START=1 -> Y20=0\nPB2=1 -> Y20=1\nSTART=0 -> Y20=1\nPB2=0 -> Y20=0",
   "monitor": "X0 X2 Y20"
@@ -334,7 +335,7 @@
   "title": "③ 해결: 조건을 OR 로 합치거나 M 을 쓴다",
   "desc": "조건을 M10 · M11 에 나눠 담고 마지막에 Y20 을 한 번만 출력했습니다. 회로가 길어져도 출력 코일은 프로그램 전체에서 딱 한 번만 나오게 하는 것이 원칙입니다.",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nPB PB2 X2 color=blue label=보조버튼\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nBUZ BZ1 Y2F label=부저",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nPB PB2 X2 color=blue label=보조버튼\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nBUZ BZ1 Y2F label=부저",
   "program": "; 조건마다 M 에 따로 만들어 두고\nLD X0\nOUT M10\nLD X2\nOUT M11\n\n; 마지막에 한 번만 OUT\nLD M10\nOR M11\nOUT Y20\nEND",
   "test": "START=1 -> M10=1 Y20=1\nSTART=0 PB2=1 -> M11=1 Y20=1\nPB2=0 -> Y20=0",
   "monitor": "X0 X2 M10 M11 Y20"
@@ -348,7 +349,7 @@
   "title": "④ 숫자를 담는 칸 D",
   "desc": "MOV K123 D0 은 \"숫자 123 을 D0 에 넣어라\" 입니다. LD>= D0 K100 은 비교 접점으로, D0 이 100 이상이면 통전됩니다. 오른쪽 디바이스 모니터에서 D0 의 값을 ✎ 로 직접 바꿔 보세요 — 80 으로 바꾸면 경보등이 꺼집니다. (자세한 내용은 9 · 10…",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nPB PB2 X2 color=blue label=보조버튼\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nBUZ BZ1 Y2F label=부저",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nPB PB2 X2 color=blue label=보조버튼\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nBUZ BZ1 Y2F label=부저",
   "program": "; 항상 ON 인 SM400 으로 값을 넣어 둔다\nLD SM400\nMOV K123 D0\nMOV K80 D1\n\n; D0 이 100 이상이면 경보등\nLD>= D0 K100\nOUT Y21\nEND",
   "test": "-> D0=123 D1=80 Y21=1",
   "monitor": "D0 D1 Y20 Y21"
@@ -362,7 +363,7 @@
   "title": "⑤ M 과 L 의 차이",
   "desc": "■ STOP 하면 출력은 꺼지지만 M20 과 L0 는 남아 있고, 다시 ▶ RUN 하면 램프가 되살아납니다. ⟲ 리셋(CPU 리셋) 을 하면 둘 다 0 이 됩니다. 실제 PLC 에서는 전원을 껐다 켜도 L 만 값이 남습니다 — 정전 후에도 기억해야 하는 생산 수량 · 설정값 · 단계에…",
   "rack": "",
-  "io": "PB START X0 color=green label=기동\nPB STOP X1 nc=1 color=red label=정지\nPB PB2 X2 color=blue label=보조버튼\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nBUZ BZ1 Y2F label=부저",
+  "io": "PB START X0 color=green label=기동\nPB STOP X1 color=red label=정지\nPB PB2 X2 color=blue label=보조버튼\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=red label=경보등\nBUZ BZ1 Y2F label=부저",
   "program": "; 보조 버튼으로 내부 릴레이와 래치 릴레이를 함께 SET\nLD X2\nSET M20\nSET L0\n\nLD M20\nOUT Y20\nLD L0\nOUT Y21\nEND",
   "test": "PB2=1 -> M20=1 L0=1 Y20=1 Y21=1\nstop\n-> Y20=0 Y21=0 M20=1 L0=1\nrun\nt=0.3 -> Y20=1 Y21=1\nreset\nt=0.3 -> M20=0 L0=0 Y20=0 Y21=0",
   "monitor": "M20 L0 Y20 Y21"
@@ -796,8 +797,8 @@
   "title": "기본 자기유지 회로",
   "desc": "기동 버튼을 눌렀다 떼 보세요. 운전등이 켜진 채로 있습니다. 래더를 보면 기동 접점은 열렸지만 아래 Y20 접점이 초록색으로 통전되어 전기가 우회해서 흐릅니다. 이제 정지 버튼을 누르면 X1 이 끊어져 회로 전체가 꺼집니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP RUN2 Y21 color=yellow label=기동우선등\nMOTOR M1 fwd=Y22 label=컨베이어 모터",
-  "program": "; 기동하면 계속 운전, 정지를 누르면 멈춘다\nLD X0\nOR Y20\nAND X1\nOUT Y20\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP RUN2 Y21 color=yellow label=기동우선등\nMOTOR M1 fwd=Y22 label=컨베이어 모터",
+  "program": "; 기동하면 계속 운전, 정지를 누르면 멈춘다\nLD X0\nOR Y20\nANI X1\nOUT Y20\nEND",
   "test": "START=1 -> Y20=1 RUN=1\nSTART=0 -> Y20=1\nSTOP=1 -> Y20=0\nSTOP=0 -> Y20=0",
   "monitor": "X0 X1 Y20"
  },
@@ -810,8 +811,8 @@
   "title": "정지 우선(Y20) 과 기동 우선(Y21) 비교",
   "desc": "정지 버튼을 누른 채로 기동 버튼을 같이 눌러 보세요. 위쪽 Y20(정지 우선)은 꿈쩍도 하지 않지만, 아래쪽 Y21(기동 우선)은 켜집니다. 기동 버튼에서 손을 떼면 유지 가지가 정지 접점에 막혀 바로 꺼집니다.안전이 중요한 설비는 반드시 정지 우선으로 만듭니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP RUN2 Y21 color=yellow label=기동우선등\nMOTOR M1 fwd=Y22 label=컨베이어 모터",
-  "program": "; 정지 우선 — 정지 접점이 회로 전체 뒤에 있다\nLD X0\nOR Y20\nAND X1\nOUT Y20\n\n; 기동 우선 — 정지 접점이 유지 가지에만 있다\nLD X0\nLD Y21\nAND X1\nORB\nOUT Y21\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP RUN2 Y21 color=yellow label=기동우선등\nMOTOR M1 fwd=Y22 label=컨베이어 모터",
+  "program": "; 정지 우선 — 정지 접점이 회로 전체 뒤에 있다\nLD X0\nOR Y20\nANI X1\nOUT Y20\n\n; 기동 우선 — 정지 접점이 유지 가지에만 있다\nLD X0\nLD Y21\nANI X1\nORB\nOUT Y21\nEND",
   "test": "START=1 -> Y20=1 Y21=1\nSTART=0 -> Y20=1 Y21=1\nSTOP=1 -> Y20=0 Y21=0\nSTOP=1 START=1 -> Y20=0 Y21=1\nSTART=0 -> Y21=0",
   "monitor": "X0 X1 Y20 Y21"
  },
@@ -824,8 +825,8 @@
   "title": "비상정지가 있는 자기유지",
   "desc": "운전 중에 비상정지 를 눌러 보세요. 바로 멈춥니다. 눌린 상태에서는 기동 버튼을 눌러도 켜지지 않습니다 — 비상정지를 풀어야 다시 기동할 수 있습니다. 이것이 정지 우선 회로의 장점입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP RUN2 Y21 color=yellow label=기동우선등\nMOTOR M1 fwd=Y22 label=컨베이어 모터",
-  "program": "; 정지 또는 비상정지 중 하나라도 끊기면 멈춘다\n@X2 비상정지 (b 접점)\nLD X0\nOR Y20\nAND X1\nAND X2\nOUT Y20\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP RUN2 Y21 color=yellow label=기동우선등\nMOTOR M1 fwd=Y22 label=컨베이어 모터",
+  "program": "; 정지 또는 비상정지 중 하나라도 끊기면 멈춘다\n@X2 비상정지 (b 접점)\nLD X0\nOR Y20\nANI X1\nANI X2\nOUT Y20\nEND",
   "test": "START=1 -> Y20=1\nEMG1=1 -> Y20=0\nSTART=1 -> Y20=0\nSTART=0 EMG1=0 -> Y20=0\nSTART=1 -> Y20=1",
   "monitor": "X0 X1 X2 Y20"
  },
@@ -838,8 +839,8 @@
   "title": "내부 릴레이 M 으로 만든 운전 회로",
   "desc": "출력(Y)으로 자기유지를 걸어도 되지만, 실무에서는 내부 릴레이 M 으로 \"운전 중\" 상태를 만들고 출력은 그 M 을 보게 합니다. 나중에 램프 · 모터 · 밸브가 늘어나도 운전 조건은 한 군데만 고치면 되기 때문입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP RUN2 Y21 color=yellow label=기동우선등\nMOTOR M1 fwd=Y22 label=컨베이어 모터",
-  "program": "; 운전 조건은 M0 하나로 만들고, 여러 출력이 함께 쓴다\nLD X0\nOR M0\nAND X1\nAND X2\nOUT M0\n\n; 운전등과 모터를 함께 켠다\nLD M0\nOUT Y20\nOUT Y22\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP RUN2 Y21 color=yellow label=기동우선등\nMOTOR M1 fwd=Y22 label=컨베이어 모터",
+  "program": "; 운전 조건은 M0 하나로 만들고, 여러 출력이 함께 쓴다\nLD X0\nOR M0\nANI X1\nANI X2\nOUT M0\n\n; 운전등과 모터를 함께 켠다\nLD M0\nOUT Y20\nOUT Y22\nEND",
   "test": "START=1 -> Y20=1 Y22=1 M0=1\nSTART=0 t=0.5 -> M1>1000\nEMG1=1 -> Y20=0 Y22=0 M0=0",
   "monitor": "M0 Y20 Y22"
  },
@@ -852,8 +853,8 @@
   "title": "SET/RST 로 만든 기동 · 정지",
   "desc": "앞 시간의 자기유지 회로와 똑같이 동작하지만 접점이 훨씬 적습니다. 기동 버튼을 눌렀다 떼도 SET 이 Y20 을 켜 둔 채로 두기 때문입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=orange label=경고등\nBUZ BZ1 Y2F label=경보 부저",
-  "program": "; 기동하면 SET, 정지를 누르면 RST\nLD X0\nSET Y20\n\n; 정지 버튼은 b 접점 배선 — 누르면 X1 이 OFF 가 된다\nLDI X1\nRST Y20\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=orange label=경고등\nBUZ BZ1 Y2F label=경보 부저",
+  "program": "; 기동하면 SET, 정지를 누르면 RST\nLD X0\nSET Y20\n\n; 정지 버튼은 b 접점 배선 — 누르면 X1 이 OFF 가 된다\nLD X1\nRST Y20\nEND",
   "test": "START=1 -> Y20=1 RUN=1\nSTART=0 -> Y20=1\nSTOP=1 -> Y20=0\nSTOP=0 -> Y20=0",
   "monitor": "X0 X1 Y20"
  },
@@ -866,8 +867,8 @@
   "title": "두 방식을 나란히 비교",
   "desc": "두 램프가 똑같이 켜지고 꺼집니다. 어느 쪽이 읽기 쉬운지 이야기해 봅시다. 회로가 짧을 때는 자기유지가, 켜는 조건과 끄는 조건이 멀리 떨어져 있을 때는 SET/RST 가 유리합니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=orange label=경고등\nBUZ BZ1 Y2F label=경보 부저",
-  "program": "; 위: 자기유지 방식 (운전등)\nLD X0\nOR Y20\nAND X1\nOUT Y20\n\n; 아래: SET/RST 방식 (경고등)\nLD X0\nSET Y21\nLDI X1\nRST Y21\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=orange label=경고등\nBUZ BZ1 Y2F label=경보 부저",
+  "program": "; 위: 자기유지 방식 (운전등)\nLD X0\nOR Y20\nANI X1\nOUT Y20\n\n; 아래: SET/RST 방식 (경고등)\nLD X0\nSET Y21\nLD X1\nRST Y21\nEND",
   "test": "START=1 -> Y20=1 Y21=1\nSTART=0 -> Y20=1 Y21=1\nSTOP=1 -> Y20=0 Y21=0\nSTOP=0 START=1 -> Y20=1 Y21=1",
   "monitor": "Y20 Y21"
  },
@@ -880,8 +881,8 @@
   "title": "래치 릴레이 L 로 기억시키기",
   "desc": "기동해 둔 뒤 오른쪽 모니터에서 STOP 을 눌렀다가 다시 RUN 해 보세요. 출력 Y20 은 STOP 하는 순간 꺼지지만, L0 은 1 을 그대로 기억하고 있어 RUN 하자마자 운전등이 다시 켜집니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=orange label=경고등\nBUZ BZ1 Y2F label=경보 부저",
-  "program": "; 운전 상태를 래치 릴레이 L0 에 기억시킨다\nLD X0\nSET L0\nLDI X1\nRST L0\n\n; 기억한 상태로 출력을 낸다\nLD L0\nOUT Y20\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=orange label=경고등\nBUZ BZ1 Y2F label=경보 부저",
+  "program": "; 운전 상태를 래치 릴레이 L0 에 기억시킨다\nLD X0\nSET L0\nLD X1\nRST L0\n\n; 기억한 상태로 출력을 낸다\nLD L0\nOUT Y20\nEND",
   "test": "START=1 -> L0=1 Y20=1\nSTART=0 -> Y20=1\nstop\nrun\nSTART=0 -> L0=1 Y20=1\nSTOP=1 -> L0=0 Y20=0",
   "monitor": "L0 Y20"
  },
@@ -894,8 +895,8 @@
   "title": "비상정지로 일괄 정지",
   "desc": "비상정지 버튼 하나로 세 출력이 모두 꺼집니다. 출력이 수십 개인 설비에서는 RST 대신 ZRST(일괄 리셋) 나 마스터 컨트롤 MC 를 씁니다 (8장).",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=orange label=경고등\nBUZ BZ1 Y2F label=경보 부저",
-  "program": "; 기동하면 운전등 · 경고등 · 부저를 모두 SET\nLD X0\nSET Y20\nSET Y21\nSET Y2F\n\n; 비상정지(b 접점)를 누르면 모두 RST\nLDI X2\nRST Y20\nRST Y21\nRST Y2F\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUN Y20 color=green label=운전등\nLAMP ALM Y21 color=orange label=경고등\nBUZ BZ1 Y2F label=경보 부저",
+  "program": "; 기동하면 운전등 · 경고등 · 부저를 모두 SET\nLD X0\nSET Y20\nSET Y21\nSET Y2F\n\n; 비상정지(b 접점)를 누르면 모두 RST\nLD X2\nRST Y20\nRST Y21\nRST Y2F\nEND",
   "test": "START=1 -> Y20=1 Y21=1 Y2F=1\nSTART=0 -> Y20=1 Y2F=1\nEMG1=1 -> Y20=0 Y21=0 Y2F=0\nEMG1=0 -> Y20=0",
   "monitor": "Y20 Y21 Y2F"
  },
@@ -908,8 +909,8 @@
   "title": "인터록이 없으면 — 위험한 회로",
   "desc": "정회전 을 누른 뒤 역회전 도 눌러 보세요. 두 출력이 동시에 ON 이 되고 조작판의 모터에 \"정회전 · 역회전 동시 ON (단락!)\" 경고가 뜹니다. 실제 설비라면 이 순간 사고입니다.",
   "rack": "",
-  "io": "PB FWD X0 label=정회전 color=green\nPB REV X1 label=역회전 color=blue\nPB STOP X2 nc=1 label=정지 color=red\nMOTOR M1 fwd=Y20 rev=Y21 label=컨베이어 모터\nLAMP LF Y22 color=green label=정회전등\nLAMP LR Y23 color=blue label=역회전등",
-  "program": "; 인터록이 없는 정역 회로 (절대 이렇게 만들지 말 것)\nLD X0\nOR Y20\nAND X2\nOUT Y20\n\nLD X1\nOR Y21\nAND X2\nOUT Y21\nEND",
+  "io": "PB FWD X0 label=정회전 color=green\nPB REV X1 label=역회전 color=blue\nPB STOP X2 label=정지 color=red\nMOTOR M1 fwd=Y20 rev=Y21 label=컨베이어 모터\nLAMP LF Y22 color=green label=정회전등\nLAMP LR Y23 color=blue label=역회전등",
+  "program": "; 인터록이 없는 정역 회로 (절대 이렇게 만들지 말 것)\nLD X0\nOR Y20\nANI X2\nOUT Y20\n\nLD X1\nOR Y21\nANI X2\nOUT Y21\nEND",
   "test": "FWD=1 -> Y20=1\nREV=1 t=1 -> Y20=1 Y21=1 M1<100",
   "monitor": "Y20 Y21"
  },
@@ -922,8 +923,8 @@
   "title": "상호 인터록을 건 정역 회로",
   "desc": "이제 정회전 중에 역회전을 눌러도 아무 일도 일어나지 않습니다. 방향을 바꾸려면 반드시 정지 버튼을 먼저 눌러야 합니다. ANI Y21 한 줄이 설비와 사람을 지킵니다.모터 그림의 화살표로 회전 방향을 확인해 보세요.",
   "rack": "",
-  "io": "PB FWD X0 label=정회전 color=green\nPB REV X1 label=역회전 color=blue\nPB STOP X2 nc=1 label=정지 color=red\nMOTOR M1 fwd=Y20 rev=Y21 label=컨베이어 모터\nLAMP LF Y22 color=green label=정회전등\nLAMP LR Y23 color=blue label=역회전등",
-  "program": "; 정회전 — 역회전이 켜져 있으면 못 켠다\nLD X0\nOR Y20\nANI Y21\nAND X2\nOUT Y20\n\n; 역회전 — 정회전이 켜져 있으면 못 켠다\nLD X1\nOR Y21\nANI Y20\nAND X2\nOUT Y21\nEND",
+  "io": "PB FWD X0 label=정회전 color=green\nPB REV X1 label=역회전 color=blue\nPB STOP X2 label=정지 color=red\nMOTOR M1 fwd=Y20 rev=Y21 label=컨베이어 모터\nLAMP LF Y22 color=green label=정회전등\nLAMP LR Y23 color=blue label=역회전등",
+  "program": "; 정회전 — 역회전이 켜져 있으면 못 켠다\nLD X0\nOR Y20\nANI Y21\nANI X2\nOUT Y20\n\n; 역회전 — 정회전이 켜져 있으면 못 켠다\nLD X1\nOR Y21\nANI Y20\nANI X2\nOUT Y21\nEND",
   "test": "FWD=1 -> Y20=1\nFWD=0 REV=1 -> Y20=1 Y21=0\nREV=0 STOP=1 -> Y20=0 Y21=0\nSTOP=0 REV=1 -> Y21=1\nREV=0 t=0.5 -> M1<-1000",
   "monitor": "X0 X1 Y20 Y21"
  },
@@ -1132,7 +1133,7 @@
   "title": "1초 온딜레이",
   "desc": "기동 버튼을 계속 누르고 있어 보세요. 1초가 지나면 램프가 켜집니다. 도중에 버튼을 떼면 현재값이 0 으로 돌아가 처음부터 다시 셉니다.래더 위의 T0 코일에 현재값 / 설정값 이 표시됩니다. 오른쪽 모니터에 TN0(현재값)을 추가해도 볼 수 있습니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=orange label=램프3\nMOTOR M1 fwd=Y23 label=컨베이어 모터",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=orange label=램프3\nMOTOR M1 fwd=Y23 label=컨베이어 모터",
   "program": "; 기동 버튼을 1초 누르고 있으면 램프가 켜진다\nLD X0\nOUT T0 K10\n\nLD T0\nOUT Y20\nEND",
   "test": "START=1 t=0.5 -> Y20=0 TN0=4\nt=0.6 -> T0=1 Y20=1 TN0=10\nSTART=0 -> Y20=0 TN0=0",
   "monitor": "X0 T0 TN0 Y20"
@@ -1146,7 +1147,7 @@
   "title": "3초 타이머의 현재값 따라가기",
   "desc": "버튼을 누른 채 현재값이 0 → 30 으로 올라가는 것을 지켜보세요. 30 에 닿는 순간 접점이 붙습니다.중간에 버튼을 뗐다가 다시 눌러 보세요. 현재값이 이어지지 않고 0 부터 다시 시작합니다 — 일반 타이머 T 의 중요한 성질입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=orange label=램프3\nMOTOR M1 fwd=Y23 label=컨베이어 모터",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=orange label=램프3\nMOTOR M1 fwd=Y23 label=컨베이어 모터",
   "program": "; 3초 = 100ms × 30\nLD X0\nOUT T0 K30\n\nLD T0\nOUT Y20\nEND",
   "test": "START=1 t=1.5 -> TN0=14 T0=0\nt=1.7 -> TN0=30 T0=1 Y20=1\nSTART=0 -> TN0=0 Y20=0",
   "monitor": "TN0 T0 Y20"
@@ -1160,7 +1161,7 @@
   "title": "타이머 세 개로 차례차례",
   "desc": "버튼을 누르고 있으면 램프가 1초 · 2초 · 3초 간격으로 차례차례 켜집니다. 신호등, 순차 기동, 안내 표시 같은 곳에 그대로 쓸 수 있는 형태입니다.버튼을 떼면 모두 한꺼번에 꺼집니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=orange label=램프3\nMOTOR M1 fwd=Y23 label=컨베이어 모터",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=orange label=램프3\nMOTOR M1 fwd=Y23 label=컨베이어 모터",
   "program": "; 같은 조건에 설정값만 다른 타이머 세 개\nLD X0\nOUT T0 K10\n\nLD X0\nOUT T1 K20\n\nLD X0\nOUT T2 K30\n\nLD T0\nOUT Y20\n\nLD T1\nOUT Y21\n\nLD T2\nOUT Y22\nEND",
   "test": "START=1 t=1.2 -> Y20=1 Y21=0 Y22=0\nt=1 -> Y21=1 Y22=0\nt=1 -> Y22=1\nSTART=0 -> Y20=0 Y21=0 Y22=0",
   "monitor": "TN0 TN1 TN2"
@@ -1174,8 +1175,8 @@
   "title": "기동 3초 뒤 컨베이어 기동",
   "desc": "기동 버튼을 한 번 누르면 3초 뒤에 컨베이어가 돕니다. 정지 버튼을 누르면 바로 멈추고 타이머도 0 으로 돌아갑니다.실제 현장에서는 이 3초 동안 경고 부저 를 울려 \"이제 기계가 움직입니다\" 를 알립니다. 사람이 컨베이어 위에 손을 올려 둔 채 갑자기 돌면 큰 사고이기 때문입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=orange label=램프3\nMOTOR M1 fwd=Y23 label=컨베이어 모터",
-  "program": "; 운전 상태를 자기유지로 만들고\nLD X0\nOR M0\nAND X1\nOUT M0\n\n; 운전 중 3초를 센 뒤\nLD M0\nOUT T0 K30\n\n; 컨베이어를 돌린다\nLD T0\nOUT Y23\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=orange label=램프3\nMOTOR M1 fwd=Y23 label=컨베이어 모터",
+  "program": "; 운전 상태를 자기유지로 만들고\nLD X0\nOR M0\nANI X1\nOUT M0\n\n; 운전 중 3초를 센 뒤\nLD M0\nOUT T0 K30\n\n; 컨베이어를 돌린다\nLD T0\nOUT Y23\nEND",
   "test": "START=1 -> M0=1 Y23=0\nSTART=0 t=3.2 -> Y23=1\nt=0.5 -> M1>1000\nSTOP=1 -> Y23=0 M0=0",
   "monitor": "M0 TN0 Y23"
  },
@@ -1188,7 +1189,7 @@
   "title": "2초 오프딜레이",
   "desc": "버튼을 톡 눌렀다 떼 보세요. 램프가 바로 켜지고, 2초 뒤에 꺼집니다.버튼을 떼는 순간부터 TN0 이 올라가는 것을 모니터에서 확인하세요. 2초가 되기 전에 다시 누르면 타이머가 0 으로 돌아가 처음부터 다시 셉니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nBUZ BZ1 Y2F label=경보 부저",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nBUZ BZ1 Y2F label=경보 부저",
   "program": "; 버튼을 누르면 즉시 ON, 떼고 2초 뒤에 OFF\nLD X0\nOR Y20\nANI T0\nOUT Y20\n\n; 버튼을 뗀 뒤(X0 OFF) 출력이 켜져 있는 동안만 카운트\nLDI X0\nAND Y20\nOUT T0 K20\nEND",
   "test": "START=1 -> Y20=1\nSTART=0 t=1 -> Y20=1\nt=1.3 -> Y20=0 T0=0",
   "monitor": "X0 Y20 TN0"
@@ -1202,7 +1203,7 @@
   "title": "0.5초 간격 점멸",
   "desc": "버튼을 누르고 있으면 램프가 0.5초 간격으로 깜빡 입니다. TN0 과 TN1 이 번갈아 올라가는 것을 모니터에서 보세요.두 타이머의 설정값을 둘 다 바꾸면 점멸 속도가 달라집니다. ✎ 편집 으로 K5 를 K2 로 바꿔 보세요.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nBUZ BZ1 Y2F label=경보 부저",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nBUZ BZ1 Y2F label=경보 부저",
   "program": "; T1 이 아닌 동안 T0 이 0.5초를 센다\nLD X0\nANI T1\nOUT T0 K5\n\n; T0 이 되면 T1 이 0.5초를 센다 (T1 이 되면 위 회로가 끊겨 T0 초기화)\nLD T0\nOUT T1 K5\n\n; T0 이 되고 T1 이 되기 전까지 램프 ON\nLD T0\nANI T1\nOUT Y20\nEND",
   "test": "START=1 t=0.3 -> Y20=0\nt=0.35 -> Y20=1\nt=0.5 -> Y20=0",
   "monitor": "TN0 TN1 Y20"
@@ -1216,7 +1217,7 @@
   "title": "클럭 릴레이로 점멸",
   "desc": "회로가 세 줄 로 줄었습니다. 대신 주기를 바꿀 수 없습니다. \"일단 깜빡이게만 하면 되는\" 경우에 편리합니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nBUZ BZ1 Y2F label=경보 부저",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nBUZ BZ1 Y2F label=경보 부저",
   "program": "; SM412 = 1초 클럭 (0.5초 ON, 0.5초 OFF)\nLD X0\nAND SM412\nOUT Y20\nEND",
   "test": "START=1 t=0.3 -> Y20=0\nt=0.5 -> Y20=1",
   "monitor": "SM412 Y20"
@@ -1230,7 +1231,7 @@
   "title": "2초 켜지고 0.5초 꺼지기",
   "desc": "부저가 2초 울리고 0.5초 쉬는 것을 반복합니다. 앞 회로와 달리 출력을 LD T0 하나로 뽑았습니다 — T1 이 되는 순간 T0 이 초기화되므로 결과가 같습니다.두 설정값을 바꿔 가며 \"짧게 삑삑\", \"길게 웅—\" 을 만들어 보세요.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nBUZ BZ1 Y2F label=경보 부저",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nBUZ BZ1 Y2F label=경보 부저",
   "program": "; T0 = 꺼져 있는 시간 0.5초\nLD X0\nANI T1\nOUT T0 K5\n\n; T1 = 켜져 있는 시간 2초\nLD T0\nOUT T1 K20\n\n; T0 이 ON 인 동안 부저 ON\nLD T0\nOUT Y2F\nEND",
   "test": "START=1 t=0.3 -> Y2F=0\nt=0.35 -> Y2F=1\nt=1.5 -> Y2F=1\nt=0.6 -> Y2F=0",
   "monitor": "TN0 TN1 Y2F"
@@ -1244,8 +1245,8 @@
   "title": "2초 뒤 기동, 정지 후에도 2초 더",
   "desc": "기동 버튼을 누르고 2초 뒤 램프가 켜집니다. 정지 버튼을 눌러도 2초 더 켜져 있다가 꺼집니다.앞에서 배운 세 가지(자기유지 · 온딜레이 · 오프딜레이)가 모두 들어 있습니다. 회로가 길어 보이지만 배운 것의 조합일 뿐입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nBUZ BZ1 Y2F label=경보 부저",
-  "program": "; 운전 상태 (자기유지)\nLD X0\nOR M0\nAND X1\nOUT M0\n\n; 기동 후 2초 지연\nLD M0\nOUT T0 K20\n\n; 출력은 자기유지 + 오프딜레이\nLD T0\nOR Y20\nANI T1\nOUT Y20\n\n; 운전이 끝난 뒤 2초를 센다\nLDI M0\nAND Y20\nOUT T1 K20\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nBUZ BZ1 Y2F label=경보 부저",
+  "program": "; 운전 상태 (자기유지)\nLD X0\nOR M0\nANI X1\nOUT M0\n\n; 기동 후 2초 지연\nLD M0\nOUT T0 K20\n\n; 출력은 자기유지 + 오프딜레이\nLD T0\nOR Y20\nANI T1\nOUT Y20\n\n; 운전이 끝난 뒤 2초를 센다\nLDI M0\nAND Y20\nOUT T1 K20\nEND",
   "test": "START=1 t=1 -> Y20=0 M0=1\nSTART=0 t=1.3 -> Y20=1\nSTOP=1 t=1 -> Y20=1 M0=0\nt=1.3 -> Y20=0",
   "monitor": "M0 TN0 TN1 Y20"
  },
@@ -1258,8 +1259,8 @@
   "title": "적산 타이머 — 누적 운전 시간",
   "desc": "기동했다가 정지했다가 다시 기동해 보세요. STN0(적산 현재값)이 0 으로 돌아가지 않고 이어집니다. 합쳐서 5초가 되면 점검등이 켜집니다.실제 설비에서는 이렇게 누적 운전 시간 을 세어 \"500시간마다 윤활유 교환\" 같은 정비 알림을 띄웁니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=운전등\nLAMP L2 Y21 color=orange label=점검등\nBUZ BZ1 Y2F label=경보 부저",
-  "program": "; 운전 상태 (자기유지)\nLD X0\nOR M0\nAND X1\nOUT M0\n\nLD M0\nOUT Y20\n\n; 운전한 시간을 쌓는다 (5초)\nLD M0\nOUT ST0 K50\n\n; 누적 5초가 되면 점검등\nLD ST0\nOUT Y21\n\n; 리셋 버튼으로 누적값 지우기\nLD X2\nRST ST0\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=운전등\nLAMP L2 Y21 color=orange label=점검등\nBUZ BZ1 Y2F label=경보 부저",
+  "program": "; 운전 상태 (자기유지)\nLD X0\nOR M0\nANI X1\nOUT M0\n\nLD M0\nOUT Y20\n\n; 운전한 시간을 쌓는다 (5초)\nLD M0\nOUT ST0 K50\n\n; 누적 5초가 되면 점검등\nLD ST0\nOUT Y21\n\n; 리셋 버튼으로 누적값 지우기\nLD X2\nRST ST0\nEND",
   "test": "START=1 t=3 -> Y20=1 Y21=0\nSTOP=1 t=0.5 -> Y20=0 STN0>25\nSTOP=0 START=1 t=2.5 -> ST0=1 Y21=1\nRSTB=1 -> Y21=0 STN0=0",
   "monitor": "M0 STN0 ST0 Y21"
  },
@@ -1272,7 +1273,7 @@
   "title": "타이머 두 개로 20초",
   "desc": "버튼을 누른 채 기다려 보세요. TN0 이 100 까지 올라간 뒤 TN1 이 올라가기 시작합니다. 합쳐서 20초입니다.시간이 오래 걸리니 래더 카드 오른쪽 위의 속도 를 올려서 확인해도 좋습니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=운전등\nLAMP L2 Y21 color=orange label=점검등\nBUZ BZ1 Y2F label=경보 부저",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=운전등\nLAMP L2 Y21 color=orange label=점검등\nBUZ BZ1 Y2F label=경보 부저",
   "program": "; 첫 번째 10초\nLD X0\nOUT T0 K100\n\n; T0 이 되면 두 번째 10초 시작\nLD T0\nOUT T1 K100\n\n; 합쳐서 20초 뒤 점등\nLD T1\nOUT Y20\nEND",
   "test": "START=1 t=10.5 -> T0=1 Y20=0\nt=10.5 -> T1=1 Y20=1\nSTART=0 -> Y20=0",
   "monitor": "TN0 TN1 Y20"
@@ -1286,7 +1287,7 @@
   "title": "설정값을 D0 으로",
   "desc": "처음에는 3초 타이머입니다. 오른쪽 모니터에서 D0 을 50 으로 바꿔 보세요 (✎ 로 값 편집). 이제 같은 프로그램이 5초 타이머가 됩니다.프로그램을 전혀 건드리지 않고 시간을 바꿨습니다 — 현장에서 아주 중요한 기법입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=운전등\nLAMP L2 Y21 color=orange label=점검등\nBUZ BZ1 Y2F label=경보 부저",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=운전등\nLAMP L2 Y21 color=orange label=점검등\nBUZ BZ1 Y2F label=경보 부저",
   "program": "; RUN 직후 기본값 3초를 넣어 둔다\nLD SM402\nMOV K30 D0\n\n; 설정값은 D0 (숫자 대신 디바이스)\nLD X0\nOUT T0 D0\n\nLD T0\nOUT Y20\nEND",
   "test": "START=1 t=3.2 -> Y20=1\nSTART=0 D0=50 -> Y20=0\nSTART=1 t=3.2 -> Y20=0\nt=2 -> Y20=1",
   "monitor": "D0 TN0 Y20"
@@ -1314,7 +1315,7 @@
   "title": "경보 지연 (오동작 방지)",
   "desc": "기동 버튼을 짧게 눌렀다 떼면 아무 일도 없습니다. 3초 이상 누르고 있어야 경보가 울립니다. 순간적인 노이즈나 채터링으로 인한 헛경보 를 막는 방법입니다 (5장의 채터링 대책).한 번 울린 경보는 SET 으로 기억되어 리셋 버튼 을 눌러야 꺼집니다 — 4장의 고장 기억 회로와 같습니…",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=운전등\nLAMP L2 Y21 color=orange label=점검등\nBUZ BZ1 Y2F label=경보 부저",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nLAMP L1 Y20 color=green label=운전등\nLAMP L2 Y21 color=orange label=점검등\nBUZ BZ1 Y2F label=경보 부저",
   "program": "; 이상 신호가 3초 이상 계속될 때만 경보를 기억시킨다\nLD X0\nOUT T0 K30\n\nLD T0\nSET Y2F\n\n; 작업자가 확인(리셋)해야 경보가 지워진다\nLD X2\nRST Y2F\nEND",
   "test": "START=1 t=1 -> Y2F=0\nSTART=0 t=0.3 -> Y2F=0\nSTART=1 t=3.2 -> Y2F=1\nSTART=0 -> Y2F=1\nRSTB=1 -> Y2F=0",
   "monitor": "X0 TN0 Y2F"
@@ -1440,8 +1441,8 @@
   "title": "3개를 세면 멈추고 밀어낸다",
   "desc": "기동 을 누르고 컨베이어에 제품을 세 개 올려 보세요. 세 번째 제품이 센서에 닿는 순간 컨베이어가 멈추고, 실린더가 나와서 제품을 옆으로 밀어냅니다. 실린더가 돌아오면 다시 운전합니다.ANI X6 이 없으면 실린더가 나간 채로 멈춰 있게 됩니다. 실린더 제어는 11장에서 더 자세히 …",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nPHOTO NG X3 label=불량 검출\nCONV CV1 run=Y24 sens=X5@0.7 push=CYL1@0.7 len=2 end=drop label=컨베이어\nCYL CYL1 sol=Y25 ext=X6 ret=X7 time=0.3 label=배출 실린더\nLAMP DONE Y20 color=yellow label=정량 완료\nBUZ BZ1 Y2F label=불량 경보",
-  "program": "; 기동 · 정지 (정량이 차면 컨베이어가 멈춘다)\nLD X0\nOR Y24\nAND X1\nANI C0\nOUT Y24\n\n; 센서를 지난 제품을 센다\nLD X5\nOUT C0 K3\n\n; 정량이 차면 배출 실린더가 나간다 (전진끝에서 돌아온다)\nLD C0\nANI X6\nOUT Y25\n\n; 배출이 끝나면 카운터를 지우고 다시 운전\nLD X6\nRST C0\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nPHOTO NG X3 label=불량 검출\nCONV CV1 run=Y24 sens=X5@0.7 push=CYL1@0.7 len=2 end=drop label=컨베이어\nCYL CYL1 sol=Y25 ext=X6 ret=X7 time=0.3 label=배출 실린더\nLAMP DONE Y20 color=yellow label=정량 완료\nBUZ BZ1 Y2F label=불량 경보",
+  "program": "; 기동 · 정지 (정량이 차면 컨베이어가 멈춘다)\nLD X0\nOR Y24\nANI X1\nANI C0\nOUT Y24\n\n; 센서를 지난 제품을 센다\nLD X5\nOUT C0 K3\n\n; 정량이 차면 배출 실린더가 나간다 (전진끝에서 돌아온다)\nLD C0\nANI X6\nOUT Y25\n\n; 배출이 끝나면 카운터를 지우고 다시 운전\nLD X6\nRST C0\nEND",
   "test": "START=1 -> Y24=1\nCV1=1 t=1.6 -> CN0=1\nCV1=1 t=1.6 -> CN0=2\nCV1=1 t=1.5 -> CN0=3 Y24=0 Y25=1\nt=0.8 -> CN0=0 CYL1=ret Y24=1 CV1=0",
   "monitor": "C0 Y24 Y25 X6"
  },
@@ -1454,8 +1455,8 @@
   "title": "불량이 2개 쌓이면 경보",
   "desc": "조작판의 불량 검출 센서를 눌러 ON 으로 해 두고 제품을 흘려 보세요. 불량이 2개가 되면 부저가 울립니다. 리셋 버튼으로 경보를 끕니다.실제 현장에서는 불량률이 기준을 넘으면 라인을 세우고 설비를 점검합니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nPHOTO NG X3 label=불량 검출\nCONV CV1 run=Y24 sens=X5@0.7 push=CYL1@0.7 len=2 end=drop label=컨베이어\nCYL CYL1 sol=Y25 ext=X6 ret=X7 time=0.3 label=배출 실린더\nLAMP DONE Y20 color=yellow label=정량 완료\nBUZ BZ1 Y2F label=불량 경보",
-  "program": "; 기동 · 정지\nLD X0\nOR Y24\nAND X1\nOUT Y24\n\n; 제품이 지나갈 때 불량 센서가 ON 이면 불량\nLD X5\nAND X3\nOUT C1 K2\n\nLD C1\nOUT Y2F\n\nLD X2\nRST C1\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nPHOTO NG X3 label=불량 검출\nCONV CV1 run=Y24 sens=X5@0.7 push=CYL1@0.7 len=2 end=drop label=컨베이어\nCYL CYL1 sol=Y25 ext=X6 ret=X7 time=0.3 label=배출 실린더\nLAMP DONE Y20 color=yellow label=정량 완료\nBUZ BZ1 Y2F label=불량 경보",
+  "program": "; 기동 · 정지\nLD X0\nOR Y24\nANI X1\nOUT Y24\n\n; 제품이 지나갈 때 불량 센서가 ON 이면 불량\nLD X5\nAND X3\nOUT C1 K2\n\nLD C1\nOUT Y2F\n\nLD X2\nRST C1\nEND",
   "test": "START=1 -> Y24=1\nCV1=1 t=1.6 -> CN1=0 Y2F=0\nNG=1 CV1=1 t=1.6 -> CN1=1 Y2F=0\nCV1=1 t=1.6 -> CN1=2 Y2F=1\nNG=0 RSTB=1 -> CN1=0 Y2F=0",
   "monitor": "X3 C1 Y2F"
  },
@@ -1468,8 +1469,8 @@
   "title": "양품 · 불량 누적과 한 번에 리셋",
   "desc": "디바이스 모니터에 D0(양품) 과 D1(불량) 을 띄워 놓고 제품을 흘려 보세요. 불량 센서를 켜고 흘린 제품만 D1 로 들어갑니다.LDP X5 는 상승 에지(5장)입니다. 이것을 LD X5 로 바꾸면 센서 앞을 지나는 동안 매 스캔마다 값이 올라가 버립니다 — 직접 바꿔서 확인해 보…",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nPHOTO NG X3 label=불량 검출\nCONV CV1 run=Y24 sens=X5@0.7 push=CYL1@0.7 len=2 end=drop label=컨베이어\nCYL CYL1 sol=Y25 ext=X6 ret=X7 time=0.3 label=배출 실린더\nLAMP DONE Y20 color=yellow label=정량 완료\nBUZ BZ1 Y2F label=불량 경보",
-  "program": "; 기동 · 정지\nLD X0\nOR Y24\nAND X1\nOUT Y24\n\n; 양품 누적 (D0)\nLDP X5\nANI X3\nINC D0\n\n; 불량 누적 (D1)\nLDP X5\nAND X3\nINC D1\n\n; 불량이 2개 쌓이면 경보\nLD X5\nAND X3\nOUT C1 K2\nLD C1\nOUT Y2F\n\n; 리셋 버튼 하나로 모두 지운다\nLD X2\nRST C1\nRST D0\nRST D1\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RSTB X2 label=리셋 color=black\nPHOTO NG X3 label=불량 검출\nCONV CV1 run=Y24 sens=X5@0.7 push=CYL1@0.7 len=2 end=drop label=컨베이어\nCYL CYL1 sol=Y25 ext=X6 ret=X7 time=0.3 label=배출 실린더\nLAMP DONE Y20 color=yellow label=정량 완료\nBUZ BZ1 Y2F label=불량 경보",
+  "program": "; 기동 · 정지\nLD X0\nOR Y24\nANI X1\nOUT Y24\n\n; 양품 누적 (D0)\nLDP X5\nANI X3\nINC D0\n\n; 불량 누적 (D1)\nLDP X5\nAND X3\nINC D1\n\n; 불량이 2개 쌓이면 경보\nLD X5\nAND X3\nOUT C1 K2\nLD C1\nOUT Y2F\n\n; 리셋 버튼 하나로 모두 지운다\nLD X2\nRST C1\nRST D0\nRST D1\nEND",
   "test": "START=1 -> Y24=1\nCV1=1 t=1.6 -> D0=1 D1=0\nNG=1 CV1=1 t=1.6 -> D0=1 D1=1 CN1=1\nCV1=1 t=1.6 -> D1=2 Y2F=1\nNG=0 RSTB=1 -> D0=0 D1=0 CN1=0 Y2F=0",
   "monitor": "D0 D1 C1"
  },
@@ -1538,7 +1539,7 @@
   "title": "두 갈래 분기",
   "desc": "기동과 인터록 버튼을 둘 다 누른 채 선택 스위치를 올렸다 내렸다 해 보세요. 램프1과 램프2가 번갈아 켜집니다.인터록 버튼에서 손을 떼면 둘 다 꺼집니다 — 공통 조건이 끊겼기 때문입니다.",
   "rack": "",
-  "io": "PB PB1 X0 label=기동 color=green\nPB PB2 X1 label=인터록 color=blue\nPB PB3 X2 label=버튼3 color=yellow\nTGL SW1 X3 label=선택\nPB STOP X4 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=blue label=램프3",
+  "io": "PB PB1 X0 label=기동 color=green\nPB PB2 X1 label=인터록 color=blue\nPB PB3 X2 label=버튼3 color=yellow\nTGL SW1 X3 label=선택\nPB STOP X4 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=blue label=램프3",
   "program": "; 기동과 인터록이 모두 ON 일 때, 선택 스위치로 갈라진다\nLD X0\nAND X1\nMPS\nAND X3\nOUT Y20\nMPP\nANI X3\nOUT Y21\nEND",
   "test": "PB1=1 PB2=1 -> Y20=0 Y21=1\nSW1=1 -> Y20=1 Y21=0\nPB2=0 -> Y20=0 Y21=0",
   "monitor": "X0 X1 X3 Y20 Y21"
@@ -1552,7 +1553,7 @@
   "title": "세 갈래 분기 (MRD)",
   "desc": "기동 버튼만 누르면 램프3만 켜집니다 (조건이 더 없는 갈래). 인터록을 같이 누르면 램프1, 버튼3을 같이 누르면 램프2가 켜집니다.갈래가 네 개면 MRD 를 두 번 쓰면 됩니다. 마지막 갈래만 MPP 입니다.",
   "rack": "",
-  "io": "PB PB1 X0 label=기동 color=green\nPB PB2 X1 label=인터록 color=blue\nPB PB3 X2 label=버튼3 color=yellow\nTGL SW1 X3 label=선택\nPB STOP X4 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=blue label=램프3",
+  "io": "PB PB1 X0 label=기동 color=green\nPB PB2 X1 label=인터록 color=blue\nPB PB3 X2 label=버튼3 color=yellow\nTGL SW1 X3 label=선택\nPB STOP X4 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=blue label=램프3",
   "program": "; 기동 하나로 세 갈래 — 가운데 갈래는 MRD\nLD X0\nMPS\nAND X1\nOUT Y20\nMRD\nAND X2\nOUT Y21\nMPP\nOUT Y22\nEND",
   "test": "PB1=1 -> Y20=0 Y21=0 Y22=1\nPB2=1 -> Y20=1 Y21=0\nPB3=1 -> Y21=1\nPB1=0 -> Y20=0 Y21=0 Y22=0",
   "monitor": "X0 Y20 Y21 Y22"
@@ -1566,8 +1567,8 @@
   "title": "자기유지 + 분기 + 타이머",
   "desc": "기동을 누르면 램프1(운전등)이 바로 켜지고, 3초 뒤 램프2(경광등)가 켜집니다. 정지 버튼을 누르면 둘 다 꺼집니다.자기유지 조건 X0 + Y20 과 X4 를 한 번만 적고, 그 아래에서 두 갈래로 나눴습니다.",
   "rack": "",
-  "io": "PB PB1 X0 label=기동 color=green\nPB PB2 X1 label=인터록 color=blue\nPB PB3 X2 label=버튼3 color=yellow\nTGL SW1 X3 label=선택\nPB STOP X4 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=blue label=램프3",
-  "program": "; 기동하면 바로 운전등, 3초 뒤 경광등\nLD X0\nOR Y20\nAND X4\nMPS\nAND T0\nOUT Y21\nMPP\nOUT Y20\n\n; 운전 중에 3초를 잰다\nLD Y20\nOUT T0 K30\nEND",
+  "io": "PB PB1 X0 label=기동 color=green\nPB PB2 X1 label=인터록 color=blue\nPB PB3 X2 label=버튼3 color=yellow\nTGL SW1 X3 label=선택\nPB STOP X4 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=blue label=램프3",
+  "program": "; 기동하면 바로 운전등, 3초 뒤 경광등\nLD X0\nOR Y20\nANI X4\nMPS\nAND T0\nOUT Y21\nMPP\nOUT Y20\n\n; 운전 중에 3초를 잰다\nLD Y20\nOUT T0 K30\nEND",
   "test": "PB1=1 -> Y20=1 Y21=0\nPB1=0 t=3.2 -> Y21=1\nSTOP=1 -> Y20=0 Y21=0",
   "monitor": "Y20 T0 Y21"
  },
@@ -1580,7 +1581,7 @@
   "title": "조건 하나에 출력 여러 개 (분기 없이)",
   "desc": "갈래마다 추가 조건이 없다면 MPS 없이 코일을 세로로 이어 붙이기만 하면 됩니다. 래더에서는 코일 세 개가 나란히 붙은 모양이 됩니다.분기(MPS)는 갈래마다 조건이 다를 때 씁니다. 필요 없는데 MPS 를 쓰면 오히려 읽기 어려워집니다.",
   "rack": "",
-  "io": "PB PB1 X0 label=기동 color=green\nPB PB2 X1 label=인터록 color=blue\nPB PB3 X2 label=버튼3 color=yellow\nTGL SW1 X3 label=선택\nPB STOP X4 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=blue label=램프3",
+  "io": "PB PB1 X0 label=기동 color=green\nPB PB2 X1 label=인터록 color=blue\nPB PB3 X2 label=버튼3 color=yellow\nTGL SW1 X3 label=선택\nPB STOP X4 label=정지 color=red\nLAMP L1 Y20 color=green label=램프1\nLAMP L2 Y21 color=yellow label=램프2\nLAMP L3 Y22 color=blue label=램프3",
   "program": "; 추가 조건이 없다면 코일을 그냥 이어 붙이면 된다\nLD X0\nAND X1\nOUT Y20\nOUT Y21\nOUT Y22\nEND",
   "test": "PB1=1 -> Y20=0\nPB2=1 -> Y20=1 Y21=1 Y22=1\nPB1=0 -> Y20=0 Y21=0 Y22=0",
   "monitor": "Y20 Y21 Y22"
@@ -1594,7 +1595,7 @@
   "title": "자동 구역과 수동 구역",
   "desc": "운전모드 셀렉터를 돌리면서 두 버튼을 눌러 보세요. 자동일 때는 자동 기동 버튼만, 수동일 때는 수동 기동 버튼만 먹습니다.구역이 쉬는 동안에는 그 안의 출력이 모두 OFF 가 됩니다. 버튼을 누르고 있어도 소용없습니다.",
   "rack": "",
-  "io": "SEL MODE X0 txt=수동/자동 label=운전모드\nPB PB1 X1 label=자동 기동 color=green\nPB PB2 X2 label=수동 기동 color=blue\nTGL SW1 X3 label=전원 허가\nPB STOP X4 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=펌프\nLAMP L2 Y21 color=yellow label=자동등\nLAMP L3 Y22 color=blue label=수동등",
+  "io": "SEL MODE X0 txt=수동/자동 label=운전모드\nPB PB1 X1 label=자동 기동 color=green\nPB PB2 X2 label=수동 기동 color=blue\nTGL SW1 X3 label=전원 허가\nPB STOP X4 label=정지 color=red\nLAMP L1 Y20 color=green label=펌프\nLAMP L2 Y21 color=yellow label=자동등\nLAMP L3 Y22 color=blue label=수동등",
   "program": "; 운전모드가 자동(ON)일 때만 살아나는 구역\nLD X0\nMC N0 M0\nLD X1\nOUT Y21\nMCR N0\n\n; 운전모드가 수동(OFF)일 때만 살아나는 구역\nLDI X0\nMC N1 M1\nLD X2\nOUT Y22\nMCR N1\nEND",
   "test": "MODE=1 PB1=1 PB2=1 -> Y21=1 Y22=0 M0=1 M1=0\nMODE=0 -> Y21=0 Y22=1 M0=0 M1=1",
   "monitor": "X0 M0 M1 Y21 Y22"
@@ -1608,7 +1609,7 @@
   "title": "중첩 마스터 컨트롤",
   "desc": "전원 허가 토글과 운전모드 셀렉터를 둘 다 켜야 펌프가 돕니다. 바깥 구역(N0)이 꺼지면 안쪽(N1)도 함께 죽습니다.MCR N1 → MCR N0 순서를 바꾸면 안 됩니다. 실을 감았다 푸는 것처럼 나중에 감은 것부터 풉니다.",
   "rack": "",
-  "io": "SEL MODE X0 txt=수동/자동 label=운전모드\nPB PB1 X1 label=자동 기동 color=green\nPB PB2 X2 label=수동 기동 color=blue\nTGL SW1 X3 label=전원 허가\nPB STOP X4 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=펌프\nLAMP L2 Y21 color=yellow label=자동등\nLAMP L3 Y22 color=blue label=수동등",
+  "io": "SEL MODE X0 txt=수동/자동 label=운전모드\nPB PB1 X1 label=자동 기동 color=green\nPB PB2 X2 label=수동 기동 color=blue\nTGL SW1 X3 label=전원 허가\nPB STOP X4 label=정지 color=red\nLAMP L1 Y20 color=green label=펌프\nLAMP L2 Y21 color=yellow label=자동등\nLAMP L3 Y22 color=blue label=수동등",
   "program": "; 바깥 구역: 전원 허가\nLD X3\nMC N0 M0\n\n; 안쪽 구역: 자동 모드\nLD X0\nMC N1 M1\nLD X1\nOUT Y20\nMCR N1\n\nMCR N0\nEND",
   "test": "SW1=1 MODE=1 PB1=1 -> Y20=1 M0=1 M1=1\nMODE=0 -> Y20=0 M0=1 M1=0\nMODE=1 -> Y20=1\nSW1=0 -> Y20=0 M0=0 M1=0",
   "monitor": "X3 X0 M0 M1 Y20"
@@ -1622,7 +1623,7 @@
   "title": "CJ 는 출력을 그대로 남긴다",
   "desc": "자동 기동 버튼을 눌러 두 램프를 켠 뒤, 전원 허가 스위치를 올리고 버튼에서 손을 떼 보세요. 램프2는 꺼지는데 램프1은 켜진 채로 남습니다. 건너뛴 회로는 아예 실행되지 않아 Y20 이 갱신되지 않기 때문입니다.",
   "rack": "",
-  "io": "SEL MODE X0 txt=수동/자동 label=운전모드\nPB PB1 X1 label=자동 기동 color=green\nPB PB2 X2 label=수동 기동 color=blue\nTGL SW1 X3 label=전원 허가\nPB STOP X4 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=펌프\nLAMP L2 Y21 color=yellow label=자동등\nLAMP L3 Y22 color=blue label=수동등",
+  "io": "SEL MODE X0 txt=수동/자동 label=운전모드\nPB PB1 X1 label=자동 기동 color=green\nPB PB2 X2 label=수동 기동 color=blue\nTGL SW1 X3 label=전원 허가\nPB STOP X4 label=정지 color=red\nLAMP L1 Y20 color=green label=펌프\nLAMP L2 Y21 color=yellow label=자동등\nLAMP L3 Y22 color=blue label=수동등",
   "program": "; 전원 허가 스위치를 올리면 아래 회로를 건너뛴다\nLD X3\nCJ P0\n\nLD X1\nOUT Y20\n\nP0\n; 건너뛰지 않는 회로 (비교용)\nLD X1\nOUT Y21\nEND",
   "test": "PB1=1 -> Y20=1 Y21=1\nSW1=1 -> Y20=1 Y21=1\nPB1=0 -> Y20=1 Y21=0",
   "monitor": "X3 Y20 Y21"
@@ -1636,7 +1637,7 @@
   "title": "잘못된 예 — 두 구역에 같은 코일",
   "desc": "자동 모드에서 자동 기동 버튼을 눌러도 펌프가 돌지 않습니다. 위의 자동 구역이 Y20 을 ON 으로 만들어도, 아래 수동 구역이 쉬면서 Y20 을 다시 OFF 로 덮어쓰기 때문입니다.반대로 수동 모드에서는 잘 돕니다 — 마지막 회로가 이겼기 때문입니다. 이런 회로는 현장에서 찾기 아…",
   "rack": "",
-  "io": "SEL MODE X0 txt=수동/자동 label=운전모드\nPB PB1 X1 label=자동 기동 color=green\nPB PB2 X2 label=수동 기동 color=blue\nTGL SW1 X3 label=전원 허가\nPB STOP X4 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=펌프\nLAMP L2 Y21 color=yellow label=자동등\nLAMP L3 Y22 color=blue label=수동등",
+  "io": "SEL MODE X0 txt=수동/자동 label=운전모드\nPB PB1 X1 label=자동 기동 color=green\nPB PB2 X2 label=수동 기동 color=blue\nTGL SW1 X3 label=전원 허가\nPB STOP X4 label=정지 color=red\nLAMP L1 Y20 color=green label=펌프\nLAMP L2 Y21 color=yellow label=자동등\nLAMP L3 Y22 color=blue label=수동등",
   "program": "; 자동 구역\nLD X0\nMC N0 M0\nLD X1\nOUT Y20\nMCR N0\n\n; 수동 구역 — 같은 Y20 을 또 썼다!\nLDI X0\nMC N1 M1\nLD X2\nOUT Y20\nMCR N1\nEND",
   "test": "MODE=1 PB1=1 -> Y20=0\nMODE=0 PB1=0 PB2=1 -> Y20=1",
   "monitor": "X0 Y20"
@@ -1650,7 +1651,7 @@
   "title": "올바른 방법 — 출력은 한 곳에서만",
   "desc": "각 구역은 내부 릴레이(M) 까지만 만들고, 진짜 출력(Y) 은 프로그램 맨 아래에서 한 번만 냅니다. 이제 자동 · 수동 어느 쪽에서도 정상 동작합니다.이 방식은 실무의 기본 원칙입니다 — \"하나의 출력은 한 곳에서만 만든다\".",
   "rack": "",
-  "io": "SEL MODE X0 txt=수동/자동 label=운전모드\nPB PB1 X1 label=자동 기동 color=green\nPB PB2 X2 label=수동 기동 color=blue\nTGL SW1 X3 label=전원 허가\nPB STOP X4 nc=1 label=정지 color=red\nLAMP L1 Y20 color=green label=펌프\nLAMP L2 Y21 color=yellow label=자동등\nLAMP L3 Y22 color=blue label=수동등",
+  "io": "SEL MODE X0 txt=수동/자동 label=운전모드\nPB PB1 X1 label=자동 기동 color=green\nPB PB2 X2 label=수동 기동 color=blue\nTGL SW1 X3 label=전원 허가\nPB STOP X4 label=정지 color=red\nLAMP L1 Y20 color=green label=펌프\nLAMP L2 Y21 color=yellow label=자동등\nLAMP L3 Y22 color=blue label=수동등",
   "program": "; 자동 구역: 결과를 내부 릴레이에\nLD X0\nMC N0 M0\nLD X1\nOUT M10\nMCR N0\n\n; 수동 구역: 결과를 다른 내부 릴레이에\nLDI X0\nMC N1 M1\nLD X2\nOUT M11\nMCR N1\n\n; 실제 출력은 마지막에 한 번만\nLD M10\nOR M11\nOUT Y20\nEND",
   "test": "MODE=1 PB1=1 -> Y20=1 M10=1 M11=0\nMODE=0 PB1=0 PB2=1 -> Y20=1 M10=0 M11=1\nPB2=0 -> Y20=0",
   "monitor": "M10 M11 Y20"
@@ -2238,8 +2239,8 @@
   "title": "실습 1 — 자동 왕복 (기동 · 정지)",
   "desc": "기동 버튼을 누르면 실린더가 쉬지 않고 왔다 갔다 합니다. 정지 버튼을 누르면 가던 길을 마저 가서 후진끝에서 멈춥니다 — 갑자기 중간에 서지 않으므로 안전합니다. C0 에 왕복 횟수가 쌓이는 것도 보세요.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nPB BEXT X2 label=양솔 전진 color=blue\nPB BRET X3 label=양솔 후진 color=black\nPB HOLD X8 label=중간 정지 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=편솔 실린더\nCYL CYL2 a=Y22 b=Y23 ext=X6 ret=X7 time=2 label=양솔 실린더\nLAMP RUNL Y20 color=green label=운전등",
-  "program": "; 기동 · 정지 자기유지\nLD X0\nOR M0\nAND X1\nOUT M0\nOUT Y20\n\n; 후진끝에 있으면 전진 시작\nLD M0\nAND X5\nSET Y21\n\n; 전진끝에 닿으면 후진\nLD X4\nRST Y21\n\n; 왕복 횟수 세기\nLDP X4\nOUT C0 K9999\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nPB BEXT X2 label=양솔 전진 color=blue\nPB BRET X3 label=양솔 후진 color=black\nPB HOLD X8 label=중간 정지 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=편솔 실린더\nCYL CYL2 a=Y22 b=Y23 ext=X6 ret=X7 time=2 label=양솔 실린더\nLAMP RUNL Y20 color=green label=운전등",
+  "program": "; 기동 · 정지 자기유지\nLD X0\nOR M0\nANI X1\nOUT M0\nOUT Y20\n\n; 후진끝에 있으면 전진 시작\nLD M0\nAND X5\nSET Y21\n\n; 전진끝에 닿으면 후진\nLD X4\nRST Y21\n\n; 왕복 횟수 세기\nLDP X4\nOUT C0 K9999\nEND",
   "test": "START=1 -> M0=1 Y21=1 RUNL=1\nSTART=0 t=1 -> CN0=1\nt=4 -> CN0>=2\nSTOPB=1 t=2.5 -> M0=0 CYL1=ret Y21=0 RUNL=0",
   "monitor": "M0 Y21 X4 X5 CN0"
  },
@@ -2252,8 +2253,8 @@
   "title": "3회 왕복 후 자동 정지",
   "desc": "ANI C0 한 줄이 \"3회를 채우면 스스로 정지\" 를 만듭니다. 기동 버튼을 다시 누르면 RST C0 으로 횟수가 0 이 되고 또 3회를 돕니다. 포장기 · 각인기처럼 정해진 횟수만 반복하는 설비의 기본형입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nPB BEXT X2 label=양솔 전진 color=blue\nPB BRET X3 label=양솔 후진 color=black\nPB HOLD X8 label=중간 정지 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=편솔 실린더\nCYL CYL2 a=Y22 b=Y23 ext=X6 ret=X7 time=2 label=양솔 실린더\nLAMP RUNL Y20 color=green label=운전등",
-  "program": "; 운전 지령 (3회를 다 채우면 스스로 꺼진다)\nLD X0\nOR M0\nAND X1\nANI C0\nOUT M0\nOUT Y20\n\n; 후진끝이면 전진\nLD M0\nAND X5\nSET Y21\n\n; 전진끝이면 후진\nLD X4\nRST Y21\n\n; 왕복 횟수 3회\nLDP X4\nOUT C0 K3\n\n; 기동 버튼으로 카운터 리셋\nLD X0\nRST C0\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nPB BEXT X2 label=양솔 전진 color=blue\nPB BRET X3 label=양솔 후진 color=black\nPB HOLD X8 label=중간 정지 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=편솔 실린더\nCYL CYL2 a=Y22 b=Y23 ext=X6 ret=X7 time=2 label=양솔 실린더\nLAMP RUNL Y20 color=green label=운전등",
+  "program": "; 운전 지령 (3회를 다 채우면 스스로 꺼진다)\nLD X0\nOR M0\nANI X1\nANI C0\nOUT M0\nOUT Y20\n\n; 후진끝이면 전진\nLD M0\nAND X5\nSET Y21\n\n; 전진끝이면 후진\nLD X4\nRST Y21\n\n; 왕복 횟수 3회\nLDP X4\nOUT C0 K3\n\n; 기동 버튼으로 카운터 리셋\nLD X0\nRST C0\nEND",
   "test": "START=1 -> M0=1 Y21=1\nSTART=0 t=2.5 -> CN0>=1\nt=4.5 -> CN0=3 M0=0\nt=1.5 -> CYL1=ret Y21=0 RUNL=0",
   "monitor": "M0 CN0 Y21"
  },
@@ -2266,7 +2267,7 @@
   "title": "실습 3 — 양솔 제어와 중간 정지",
   "desc": "전진 버튼을 눌렀다 떼도 실린더가 계속 나갑니다 — 밸브가 위치를 기억하기 때문입니다. 움직이는 도중에 중간 정지 버튼을 누르면 그 자리에 멈춥니다(CYL1=mid). 편솔로는 할 수 없는 동작입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nPB BEXT X2 label=양솔 전진 color=blue\nPB BRET X3 label=양솔 후진 color=black\nPB HOLD X8 label=중간 정지 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=편솔 실린더\nCYL CYL2 a=Y22 b=Y23 ext=X6 ret=X7 time=2 label=양솔 실린더\nLAMP RUNL Y20 color=green label=운전등",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nPB BEXT X2 label=양솔 전진 color=blue\nPB BRET X3 label=양솔 후진 color=black\nPB HOLD X8 label=중간 정지 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=편솔 실린더\nCYL CYL2 a=Y22 b=Y23 ext=X6 ret=X7 time=2 label=양솔 실린더\nLAMP RUNL Y20 color=green label=운전등",
   "program": "; 전진 : 전진 코일 SET, 후진 코일 RST\nLD X2\nANI X3\nSET Y22\nRST Y23\n\n; 후진 : 후진 코일 SET, 전진 코일 RST\nLD X3\nANI X2\nSET Y23\nRST Y22\n\n; 중간 정지 : 두 코일 모두 OFF -> 그 자리에 선다\nLD X8\nRST Y22\nRST Y23\nEND",
   "test": "BEXT=1 -> Y22=1 Y23=0\nBEXT=0 t=0.6 -> CYL2=mid\nHOLD=1 -> Y22=0 Y23=0\nHOLD=0 t=1 -> CYL2=mid\nBRET=1 -> Y23=1 Y22=0\nBRET=0 t=2.5 -> CYL2=ret",
   "monitor": "Y22 Y23 X6 X7"
@@ -2280,8 +2281,8 @@
   "title": "A 가 전진끝일 때만 B 를 내보낸다",
   "desc": "A 가 들어와 있는 상태에서 B 전진 버튼을 아무리 눌러도 B 는 나가지 않습니다. A 를 먼저 내보낸 뒤에 눌러 보세요. 이렇게 \"어떤 조건에서만 동작\" 을 거는 것이 인터록(interlock)입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nPB BEXT X2 label=B 전진 color=blue\nPB BRET X3 label=B 후진 color=black\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=A 실린더\nCYL CYL2 a=Y22 b=Y23 ext=X6 ret=X7 time=1 label=B 실린더\nLAMP RUNL Y20 color=green label=운전등\nBUZ ALM Y2F label=경보",
-  "program": "; A 실린더 전진 · 후진\nLD X0\nOR Y21\nAND X1\nOUT Y21\n\n; B 는 A 가 전진끝(X4)일 때만 전진할 수 있다\nLD X2\nAND X4\nSET Y22\nRST Y23\n\n; B 후진은 언제나 가능\nLD X3\nSET Y23\nRST Y22\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nPB BEXT X2 label=B 전진 color=blue\nPB BRET X3 label=B 후진 color=black\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=A 실린더\nCYL CYL2 a=Y22 b=Y23 ext=X6 ret=X7 time=1 label=B 실린더\nLAMP RUNL Y20 color=green label=운전등\nBUZ ALM Y2F label=경보",
+  "program": "; A 실린더 전진 · 후진\nLD X0\nOR Y21\nANI X1\nOUT Y21\n\n; B 는 A 가 전진끝(X4)일 때만 전진할 수 있다\nLD X2\nAND X4\nSET Y22\nRST Y23\n\n; B 후진은 언제나 가능\nLD X3\nSET Y23\nRST Y22\nEND",
   "test": "BEXT=1 -> Y22=0\nBEXT=0 START=1 -> Y21=1\nSTART=0 t=1.2 -> CYL1=ext\nBEXT=1 -> Y22=1\nBEXT=0 t=1.2 -> CYL2=ext",
   "monitor": "Y21 X4 Y22 Y23"
  },
@@ -2294,7 +2295,7 @@
   "title": "A+ B+ B− A− 한 사이클",
   "desc": "기동 버튼을 한 번 누르면 네 동작이 순서대로 일어납니다. 오른쪽 모니터에서 M1 → M2 → M3 → M4 가 한 칸씩 켜졌다 꺼지는 것을 보세요. A 는 편솔이라 스텝1~3 내내 코일을 켜 두어야 전진 상태가 유지됩니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nPB BEXT X2 label=B 전진 color=blue\nPB BRET X3 label=B 후진 color=black\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=A 실린더\nCYL CYL2 a=Y22 b=Y23 ext=X6 ret=X7 time=1 label=B 실린더\nLAMP RUNL Y20 color=green label=운전등\nBUZ ALM Y2F label=경보",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nPB BEXT X2 label=B 전진 color=blue\nPB BRET X3 label=B 후진 color=black\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=A 실린더\nCYL CYL2 a=Y22 b=Y23 ext=X6 ret=X7 time=1 label=B 실린더\nLAMP RUNL Y20 color=green label=운전등\nBUZ ALM Y2F label=경보",
   "program": "; 스텝1 A+ : 기동 · 둘 다 후진끝일 때만 시작\nLD X0\nAND X5\nAND X7\nSET M1\n\n; A 전진끝 -> 스텝2 B+\nLD M1\nAND X4\nSET M2\nRST M1\n\n; B 전진끝 -> 스텝3 B-\nLD M2\nAND X6\nSET M3\nRST M2\n\n; B 후진끝 -> 스텝4 A-\nLD M3\nAND X7\nSET M4\nRST M3\n\n; A 후진끝 -> 사이클 끝\nLD M4\nAND X5\nRST M4\n\n; A 실린더(편솔) : 스텝1~3 동안 전진 유지\nLD M1\nOR M2\nOR M3\nOUT Y21\n\n; B 실린더(양솔) : SET / RST\nLD M2\nSET Y22\nRST Y23\n\nLD M3\nSET Y23\nRST Y22\n\nLD M4\nRST Y23\nEND",
   "test": "START=1 -> M1=1 Y21=1\nSTART=0 t=1.2 -> CYL1=ext M2=1 Y22=1\nt=1.2 -> M3=1 Y23=1 Y22=0\nt=1.2 -> CYL2=ret M4=1 Y21=0\nt=1.2 -> CYL1=ret M4=0 Y23=0",
   "monitor": "M1 M2 M3 M4"
@@ -2322,8 +2323,8 @@
   "title": "기동하면 계속 반복, 정지하면 사이클을 마치고 정지",
   "desc": "실습 2 와 달라진 곳은 첫 줄에 LD M0 이 붙은 것 하나뿐입니다. 운전 지령이 살아 있는 한 사이클이 계속 반복되고, 정지 버튼을 누르면 하던 사이클을 마치고 출발 위치에서 멈춥니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nPB BEXT X2 label=B 전진 color=blue\nPB BRET X3 label=B 후진 color=black\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=A 실린더\nCYL CYL2 a=Y22 b=Y23 ext=X6 ret=X7 time=1 label=B 실린더\nLAMP RUNL Y20 color=green label=운전등\nBUZ ALM Y2F label=경보",
-  "program": "; 운전 지령 자기유지\nLD X0\nOR M0\nAND X1\nOUT M0\nOUT Y20\n\n; 스텝1 A+ : 운전 중 · 둘 다 후진끝\nLD M0\nAND X5\nAND X7\nSET M1\n\nLD M1\nAND X4\nSET M2\nRST M1\n\nLD M2\nAND X6\nSET M3\nRST M2\n\nLD M3\nAND X7\nSET M4\nRST M3\n\n; 사이클 끝 · 횟수 세기\nLD M4\nAND X5\nRST M4\nOUT C0 K9999\n\n; A 실린더\nLD M1\nOR M2\nOR M3\nOUT Y21\n\n; B 실린더\nLD M2\nSET Y22\nRST Y23\n\nLD M3\nSET Y23\nRST Y22\n\nLD M4\nRST Y23\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nPB BEXT X2 label=B 전진 color=blue\nPB BRET X3 label=B 후진 color=black\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=A 실린더\nCYL CYL2 a=Y22 b=Y23 ext=X6 ret=X7 time=1 label=B 실린더\nLAMP RUNL Y20 color=green label=운전등\nBUZ ALM Y2F label=경보",
+  "program": "; 운전 지령 자기유지\nLD X0\nOR M0\nANI X1\nOUT M0\nOUT Y20\n\n; 스텝1 A+ : 운전 중 · 둘 다 후진끝\nLD M0\nAND X5\nAND X7\nSET M1\n\nLD M1\nAND X4\nSET M2\nRST M1\n\nLD M2\nAND X6\nSET M3\nRST M2\n\nLD M3\nAND X7\nSET M4\nRST M3\n\n; 사이클 끝 · 횟수 세기\nLD M4\nAND X5\nRST M4\nOUT C0 K9999\n\n; A 실린더\nLD M1\nOR M2\nOR M3\nOUT Y21\n\n; B 실린더\nLD M2\nSET Y22\nRST Y23\n\nLD M3\nSET Y23\nRST Y22\n\nLD M4\nRST Y23\nEND",
   "test": "START=1 -> M0=1 M1=1\nSTART=0 t=4.5 -> CN0>=1\nt=4.5 -> CN0>=2\nSTOPB=1 t=5 -> M0=0 CYL1=ret CYL2=ret",
   "monitor": "M0 M1 M2 M3 M4 CN0"
  },
@@ -2336,8 +2337,8 @@
   "title": "자기유지로 모터 돌리기",
   "desc": "4장의 자기유지와 똑같습니다. 다른 점은 AND X3(THR) 이 하나 더 들어간 것입니다. 정지 버튼과 THR 은 둘 다 b 접점 배선이라 프로그램에서는 a 접점으로 직렬 연결합니다. 조작판의 THR 스위치를 내려 보면 모터가 바로 멈춥니다.",
   "rack": "",
-  "io": "PB FWDB X0 label=정회전 color=green\nPB REVB X1 label=역회전 color=blue\nPB STOPB X2 nc=1 label=정지 color=red\nTGL THR X3 on=1 label=과부하 THR\nMOTOR M1 fwd=Y22 rev=Y23 label=모터\nLAMP FL Y20 color=green label=정회전등\nLAMP RL Y21 color=blue label=역회전등\nBUZ ALM Y2F label=경보",
-  "program": "; 정회전 기동 · 정지 (THR 이 떨어지면 즉시 정지)\n@X0 정회전 버튼\n@X2 정지 버튼\n@X3 과부하 THR\nLD X0\nOR Y22\nAND X2\nAND X3\nOUT Y22\nOUT Y20\nEND",
+  "io": "PB FWDB X0 label=정회전 color=green\nPB REVB X1 label=역회전 color=blue\nPB STOPB X2 label=정지 color=red\nTGL THR X3 on=1 label=과부하 THR\nMOTOR M1 fwd=Y22 rev=Y23 label=모터\nLAMP FL Y20 color=green label=정회전등\nLAMP RL Y21 color=blue label=역회전등\nBUZ ALM Y2F label=경보",
+  "program": "; 정회전 기동 · 정지 (THR 이 떨어지면 즉시 정지)\n@X0 정회전 버튼\n@X2 정지 버튼\n@X3 과부하 THR\nLD X0\nOR Y22\nANI X2\nAND X3\nOUT Y22\nOUT Y20\nEND",
   "test": "FWDB=1 -> Y22=1 M1>1000 FL=1\nFWDB=0 -> Y22=1\nSTOPB=1 -> Y22=0\nSTOPB=0 t=2 -> M1<50 FL=0",
   "monitor": "Y22 X2 X3"
  },
@@ -2350,8 +2351,8 @@
   "title": "정회전 · 역회전 인터록",
   "desc": "정회전 중에 역회전 버튼을 아무리 눌러도 아무 일도 일어나지 않습니다. 반드시 정지시킨 뒤에야 반대 방향으로 돌릴 수 있습니다. 모니터에서 회전수가 음수로 바뀌는 것이 역회전입니다.",
   "rack": "",
-  "io": "PB FWDB X0 label=정회전 color=green\nPB REVB X1 label=역회전 color=blue\nPB STOPB X2 nc=1 label=정지 color=red\nTGL THR X3 on=1 label=과부하 THR\nMOTOR M1 fwd=Y22 rev=Y23 label=모터\nLAMP FL Y20 color=green label=정회전등\nLAMP RL Y21 color=blue label=역회전등\nBUZ ALM Y2F label=경보",
-  "program": "; 정회전 (역회전이 꺼져 있을 때만)\nLD X0\nOR Y22\nAND X2\nAND X3\nANI Y23\nOUT Y22\nOUT Y20\n\n; 역회전 (정회전이 꺼져 있을 때만)\nLD X1\nOR Y23\nAND X2\nAND X3\nANI Y22\nOUT Y23\nOUT Y21\nEND",
+  "io": "PB FWDB X0 label=정회전 color=green\nPB REVB X1 label=역회전 color=blue\nPB STOPB X2 label=정지 color=red\nTGL THR X3 on=1 label=과부하 THR\nMOTOR M1 fwd=Y22 rev=Y23 label=모터\nLAMP FL Y20 color=green label=정회전등\nLAMP RL Y21 color=blue label=역회전등\nBUZ ALM Y2F label=경보",
+  "program": "; 정회전 (역회전이 꺼져 있을 때만)\nLD X0\nOR Y22\nANI X2\nAND X3\nANI Y23\nOUT Y22\nOUT Y20\n\n; 역회전 (정회전이 꺼져 있을 때만)\nLD X1\nOR Y23\nANI X2\nAND X3\nANI Y22\nOUT Y23\nOUT Y21\nEND",
   "test": "FWDB=1 -> Y22=1 M1>1000\nREVB=1 -> Y23=0 Y22=1\nFWDB=0 REVB=0 STOPB=1 -> Y22=0\nSTOPB=0 REVB=1 -> Y23=1 M1<-1000 RL=1",
   "monitor": "Y22 Y23 M1"
  },
@@ -2364,8 +2365,8 @@
   "title": "2초가 지나야 방향 전환 허가",
   "desc": "정지시킨 직후에 역회전 버튼을 누르면 먹지 않습니다. 2초를 기다렸다가 다시 누르면 돕니다. AND T0 이 기동 조건에만 들어가 있는 점을 보세요 — 자기유지(OR Y22) 뒤에 넣으면 2초 뒤에 스스로 꺼져 버립니다.",
   "rack": "",
-  "io": "PB FWDB X0 label=정회전 color=green\nPB REVB X1 label=역회전 color=blue\nPB STOPB X2 nc=1 label=정지 color=red\nTGL THR X3 on=1 label=과부하 THR\nMOTOR M1 fwd=Y22 rev=Y23 label=모터\nLAMP FL Y20 color=green label=정회전등\nLAMP RL Y21 color=blue label=역회전등\nBUZ ALM Y2F label=경보",
-  "program": "; 양쪽이 모두 꺼지고 2초가 지나야 전환 허가\nLDI Y22\nANI Y23\nOUT T0 K20\n\n; 정회전\nLD X0\nAND T0\nOR Y22\nAND X2\nAND X3\nANI Y23\nOUT Y22\nOUT Y20\n\n; 역회전\nLD X1\nAND T0\nOR Y23\nAND X2\nAND X3\nANI Y22\nOUT Y23\nOUT Y21\nEND",
+  "io": "PB FWDB X0 label=정회전 color=green\nPB REVB X1 label=역회전 color=blue\nPB STOPB X2 label=정지 color=red\nTGL THR X3 on=1 label=과부하 THR\nMOTOR M1 fwd=Y22 rev=Y23 label=모터\nLAMP FL Y20 color=green label=정회전등\nLAMP RL Y21 color=blue label=역회전등\nBUZ ALM Y2F label=경보",
+  "program": "; 양쪽이 모두 꺼지고 2초가 지나야 전환 허가\nLDI Y22\nANI Y23\nOUT T0 K20\n\n; 정회전\nLD X0\nAND T0\nOR Y22\nANI X2\nAND X3\nANI Y23\nOUT Y22\nOUT Y20\n\n; 역회전\nLD X1\nAND T0\nOR Y23\nANI X2\nAND X3\nANI Y22\nOUT Y23\nOUT Y21\nEND",
   "test": "t=2 -> T0=1\nFWDB=1 -> Y22=1 M1>1000\nREVB=1 -> Y23=0\nFWDB=0 REVB=0 STOPB=1 -> Y22=0\nSTOPB=0 -> T0=0\nREVB=1 -> Y23=0\nREVB=0 t=2 -> T0=1\nREVB=1 -> Y23=1 M1<-1000",
   "monitor": "T0 Y22 Y23"
  },
@@ -2378,8 +2379,8 @@
   "title": "THR 이 떨어지면 기억하고 경보",
   "desc": "THR 을 내렸다가 다시 올려도 경보가 저절로 풀리지 않습니다. 사람이 원인을 확인하고 정지 버튼을 눌러야 해제됩니다. 이것을 수동 복귀라고 하며, 안전과 관련된 이상은 모두 이렇게 만듭니다.",
   "rack": "",
-  "io": "PB FWDB X0 label=정회전 color=green\nPB REVB X1 label=역회전 color=blue\nPB STOPB X2 nc=1 label=정지 color=red\nTGL THR X3 on=1 label=과부하 THR\nMOTOR M1 fwd=Y22 rev=Y23 label=모터\nLAMP FL Y20 color=green label=정회전등\nLAMP RL Y21 color=blue label=역회전등\nBUZ ALM Y2F label=경보",
-  "program": "; 과부하가 나면 이상 상태를 기억한다\nLDI X3\nSET M10\n\n; 이상이면 경보\nLD M10\nOUT Y2F\n\n; 정회전 (이상 중에는 기동 금지)\nLD X0\nOR Y22\nAND X2\nANI M10\nOUT Y22\nOUT Y20\n\n; 복귀 : THR 이 되돌아온 뒤 정지 버튼을 눌러야 해제\nLDI X2\nAND X3\nRST M10\nEND",
+  "io": "PB FWDB X0 label=정회전 color=green\nPB REVB X1 label=역회전 color=blue\nPB STOPB X2 label=정지 color=red\nTGL THR X3 on=1 label=과부하 THR\nMOTOR M1 fwd=Y22 rev=Y23 label=모터\nLAMP FL Y20 color=green label=정회전등\nLAMP RL Y21 color=blue label=역회전등\nBUZ ALM Y2F label=경보",
+  "program": "; 과부하가 나면 이상 상태를 기억한다\nLDI X3\nSET M10\n\n; 이상이면 경보\nLD M10\nOUT Y2F\n\n; 정회전 (이상 중에는 기동 금지)\nLD X0\nOR Y22\nANI X2\nANI M10\nOUT Y22\nOUT Y20\n\n; 복귀 : THR 이 되돌아온 뒤 정지 버튼을 눌러야 해제\nLD X2\nAND X3\nRST M10\nEND",
   "test": "FWDB=1 -> Y22=1 M1>1000\nFWDB=0 THR=0 -> M10=1 Y22=0 ALM=1\nTHR=1 -> M10=1 ALM=1\nSTOPB=1 -> M10=0 ALM=0\nSTOPB=0 FWDB=1 -> Y22=1",
   "monitor": "X3 M10 Y2F"
  },
@@ -2392,8 +2393,8 @@
   "title": "기동하면 벨트가 돌고, 투입 버튼으로 제품이 올라온다",
   "desc": "기동하면 벨트가 움직이고, 제품 투입 버튼을 누를 때마다 제품이 하나씩 올라옵니다. 제품이 컨베이어를 따라 흘러가면서 센서 앞을 지날 때 X10 · X11 이 깜빡이는 것을 보세요.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nSEL MODE X2 txt=수동/자동 label=모드\nPB FEEDB X3 label=제품 투입 color=blue\nPB JOG X6 label=수동 운전 color=yellow\nCONV CV1 run=Y24 feed=Y25 sens=X10@0.5,X11@0.95 len=2 end=drop label=컨베이어\nLAMP RUNL Y20 color=green label=운전등\nLAMP EMPTYL Y21 color=yellow label=제품 없음\nSEG7 DISP Y30 digits=2 label=생산 수량",
-  "program": "; 제품 투입 버튼 -> 공급 장치\nLD X3\nOUT Y25\n\n; 컨베이어 기동 · 정지\nLD X0\nOR Y24\nAND X1\nOUT Y24\nOUT Y20\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nSEL MODE X2 txt=수동/자동 label=모드\nPB FEEDB X3 label=제품 투입 color=blue\nPB JOG X6 label=수동 운전 color=yellow\nCONV CV1 run=Y24 feed=Y25 sens=X10@0.5,X11@0.95 len=2 end=drop label=컨베이어\nLAMP RUNL Y20 color=green label=운전등\nLAMP EMPTYL Y21 color=yellow label=제품 없음\nSEG7 DISP Y30 digits=2 label=생산 수량",
+  "program": "; 제품 투입 버튼 -> 공급 장치\nLD X3\nOUT Y25\n\n; 컨베이어 기동 · 정지\nLD X0\nOR Y24\nANI X1\nOUT Y24\nOUT Y20\nEND",
   "test": "START=1 -> Y24=1 RUNL=1\nSTART=0 FEEDB=1 -> CV1=1\nFEEDB=0 -> CV1=1\nFEEDB=1 -> CV1=2\nFEEDB=0 STOPB=1 -> Y24=0 RUNL=0",
   "monitor": "Y24 Y25 CV1"
  },
@@ -2406,8 +2407,8 @@
   "title": "센서를 지나간 제품을 세어 7세그먼트에 표시",
   "desc": "제품이 센서 앞을 지날 때마다 C0 가 하나씩 올라가고 7세그먼트에 표시됩니다. LDP X10 의 펄스 를 붙여 \"지나간 순간 한 번\" 이라는 뜻을 분명히 했습니다. 카운터를 리셋하려면 RST C0 회로가 따로 필요합니다 (과제 12-3).",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nSEL MODE X2 txt=수동/자동 label=모드\nPB FEEDB X3 label=제품 투입 color=blue\nPB JOG X6 label=수동 운전 color=yellow\nCONV CV1 run=Y24 feed=Y25 sens=X10@0.5,X11@0.95 len=2 end=drop label=컨베이어\nLAMP RUNL Y20 color=green label=운전등\nLAMP EMPTYL Y21 color=yellow label=제품 없음\nSEG7 DISP Y30 digits=2 label=생산 수량",
-  "program": "; 제품 투입\nLD X3\nOUT Y25\n\n; 컨베이어 운전\nLD X0\nOR Y24\nAND X1\nOUT Y24\nOUT Y20\n\n; 센서를 지나갈 때마다 +1\nLDP X10\nOUT C0 K9999\n\n; 수량을 7세그먼트에 표시\nLD SM400\nBCD C0 K2Y30\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nSEL MODE X2 txt=수동/자동 label=모드\nPB FEEDB X3 label=제품 투입 color=blue\nPB JOG X6 label=수동 운전 color=yellow\nCONV CV1 run=Y24 feed=Y25 sens=X10@0.5,X11@0.95 len=2 end=drop label=컨베이어\nLAMP RUNL Y20 color=green label=운전등\nLAMP EMPTYL Y21 color=yellow label=제품 없음\nSEG7 DISP Y30 digits=2 label=생산 수량",
+  "program": "; 제품 투입\nLD X3\nOUT Y25\n\n; 컨베이어 운전\nLD X0\nOR Y24\nANI X1\nOUT Y24\nOUT Y20\n\n; 센서를 지나갈 때마다 +1\nLDP X10\nOUT C0 K9999\n\n; 수량을 7세그먼트에 표시\nLD SM400\nBCD C0 K2Y30\nEND",
   "test": "START=1 -> Y24=1\nSTART=0 FEEDB=1 -> CV1=1\nFEEDB=0 t=1.2 -> CN0=1 DISP=1\nFEEDB=1 -> CV1=2\nFEEDB=0 t=1.2 -> CN0=2 DISP=2",
   "monitor": "CN0 DISP X10"
  },
@@ -2420,8 +2421,8 @@
   "title": "3초 동안 제품이 없으면 정지",
   "desc": "제품을 하나 흘려 보낸 뒤 더 넣지 않으면, 마지막 제품이 빠져나가고 3초 뒤에 컨베이어가 스스로 멈춥니다. 기동 버튼을 다시 누르면 해제되고 또 돕니다. 실무에서는 이 시간을 30초~몇 분으로 잡습니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nSEL MODE X2 txt=수동/자동 label=모드\nPB FEEDB X3 label=제품 투입 color=blue\nPB JOG X6 label=수동 운전 color=yellow\nCONV CV1 run=Y24 feed=Y25 sens=X10@0.5,X11@0.95 len=2 end=drop label=컨베이어\nLAMP RUNL Y20 color=green label=운전등\nLAMP EMPTYL Y21 color=yellow label=제품 없음\nSEG7 DISP Y30 digits=2 label=생산 수량",
-  "program": "; 제품 투입\nLD X3\nOUT Y25\n\n; 운전 (이상 정지 중에는 못 돈다)\nLD X0\nOR Y24\nAND X1\nANI M9\nOUT Y24\nOUT Y20\n\n; 운전 중인데 두 센서 모두 비어 있으면 시간을 센다\nLD Y24\nANI X10\nANI X11\nOUT T0 K30\n\n; 3초가 지나면 정지\nLD T0\nSET M9\n\nLD M9\nOUT Y21\n\n; 기동 버튼으로 해제\nLD X0\nRST M9\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nSEL MODE X2 txt=수동/자동 label=모드\nPB FEEDB X3 label=제품 투입 color=blue\nPB JOG X6 label=수동 운전 color=yellow\nCONV CV1 run=Y24 feed=Y25 sens=X10@0.5,X11@0.95 len=2 end=drop label=컨베이어\nLAMP RUNL Y20 color=green label=운전등\nLAMP EMPTYL Y21 color=yellow label=제품 없음\nSEG7 DISP Y30 digits=2 label=생산 수량",
+  "program": "; 제품 투입\nLD X3\nOUT Y25\n\n; 운전 (이상 정지 중에는 못 돈다)\nLD X0\nOR Y24\nANI X1\nANI M9\nOUT Y24\nOUT Y20\n\n; 운전 중인데 두 센서 모두 비어 있으면 시간을 센다\nLD Y24\nANI X10\nANI X11\nOUT T0 K30\n\n; 3초가 지나면 정지\nLD T0\nSET M9\n\nLD M9\nOUT Y21\n\n; 기동 버튼으로 해제\nLD X0\nRST M9\nEND",
   "test": "START=1 -> Y24=1 RUNL=1\nSTART=0 FEEDB=1 -> CV1=1\nFEEDB=0 t=1 -> Y24=1\nt=1.2 -> CV1=0\nt=3.4 -> M9=1 Y24=0 EMPTYL=1",
   "monitor": "T0 M9 Y24"
  },
@@ -2434,8 +2435,8 @@
   "title": "셀렉터로 수동 · 자동 전환",
   "desc": "셀렉터가 수동(왼쪽) 이면 조그 버튼을 누르는 동안만 벨트가 돕니다. 자동(오른쪽) 으로 돌리면 기동 · 정지 버튼으로 운전됩니다. 두 조건을 ORB 로 병렬 연결한 것이 8장에서 배운 블록 병렬입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nSEL MODE X2 txt=수동/자동 label=모드\nPB FEEDB X3 label=제품 투입 color=blue\nPB JOG X6 label=수동 운전 color=yellow\nCONV CV1 run=Y24 feed=Y25 sens=X10@0.5,X11@0.95 len=2 end=drop label=컨베이어\nLAMP RUNL Y20 color=green label=운전등\nLAMP EMPTYL Y21 color=yellow label=제품 없음\nSEG7 DISP Y30 digits=2 label=생산 수량",
-  "program": "; 자동 운전 지령 (기동 · 정지 자기유지)\nLD X0\nOR M20\nAND X1\nOUT M20\n\n; 자동 모드이면 운전 지령으로, 수동 모드이면 조그 버튼으로\nLD M20\nAND X2\nLD X6\nANI X2\nORB\nOUT Y24\nOUT Y20\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nSEL MODE X2 txt=수동/자동 label=모드\nPB FEEDB X3 label=제품 투입 color=blue\nPB JOG X6 label=수동 운전 color=yellow\nCONV CV1 run=Y24 feed=Y25 sens=X10@0.5,X11@0.95 len=2 end=drop label=컨베이어\nLAMP RUNL Y20 color=green label=운전등\nLAMP EMPTYL Y21 color=yellow label=제품 없음\nSEG7 DISP Y30 digits=2 label=생산 수량",
+  "program": "; 자동 운전 지령 (기동 · 정지 자기유지)\nLD X0\nOR M20\nANI X1\nOUT M20\n\n; 자동 모드이면 운전 지령으로, 수동 모드이면 조그 버튼으로\nLD M20\nAND X2\nLD X6\nANI X2\nORB\nOUT Y24\nOUT Y20\nEND",
   "test": "JOG=1 -> Y24=1 RUNL=1\nJOG=0 -> Y24=0\nSTART=1 -> M20=1 Y24=0\nSTART=0 MODE=1 -> Y24=1\nMODE=0 -> Y24=0\nJOG=1 -> Y24=1",
   "monitor": "X2 M20 Y24"
  },
@@ -2448,8 +2449,8 @@
   "title": "센서에 제품이 걸리면 벨트를 세운다",
   "desc": "제품이 센서 앞에 오면 벨트가 그 자리에서 멈춥니다. 아직 밀어내는 장치가 없으니 제품은 계속 거기 있습니다. ANI X10 한 줄로 만든 가장 단순한 위치 맞추기(positioning) 입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nPB FEEDB X3 label=제품 투입 color=blue\nCONV CV1 run=Y24 feed=Y25 sens=X10@0.6 push=CYL1@0.6 len=3 label=컨베이어\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=0.6 label=푸셔\nLAMP RUNL Y20 color=green label=운전등\nSEG7 DISP Y30 digits=2 label=분류 수량",
-  "program": "; 제품 투입\nLD X3\nOUT Y25\n\n; 운전 지령\nLD X0\nOR M0\nAND X1\nOUT M0\nOUT Y20\n\n; 제품이 감지되면 컨베이어 정지\nLD M0\nANI X10\nOUT Y24\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nPB FEEDB X3 label=제품 투입 color=blue\nCONV CV1 run=Y24 feed=Y25 sens=X10@0.6 push=CYL1@0.6 len=3 label=컨베이어\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=0.6 label=푸셔\nLAMP RUNL Y20 color=green label=운전등\nSEG7 DISP Y30 digits=2 label=분류 수량",
+  "program": "; 제품 투입\nLD X3\nOUT Y25\n\n; 운전 지령\nLD X0\nOR M0\nANI X1\nOUT M0\nOUT Y20\n\n; 제품이 감지되면 컨베이어 정지\nLD M0\nANI X10\nOUT Y24\nEND",
   "test": "START=1 -> Y24=1 M0=1\nSTART=0 FEEDB=1 -> CV1=1\nFEEDB=0 t=2 -> X10=1 Y24=0\nt=1 -> X10=1 Y24=0",
   "monitor": "M0 X10 Y24 CV1"
  },
@@ -2462,8 +2463,8 @@
   "title": "컨베이어 + 푸셔 실린더 분류",
   "desc": "제품이 위치에 오면 벨트가 서고 → 푸셔가 나가 제품을 밀어내고 → 다시 들어오면 벨트가 돕니다. M1 은 \"푸셔 동작 중\" 이라는 이름표입니다. 이렇게 동작마다 내부 릴레이에 이름을 붙이면 회로가 훨씬 읽기 쉬워집니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nPB FEEDB X3 label=제품 투입 color=blue\nCONV CV1 run=Y24 feed=Y25 sens=X10@0.6 push=CYL1@0.6 len=3 label=컨베이어\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=0.6 label=푸셔\nLAMP RUNL Y20 color=green label=운전등\nSEG7 DISP Y30 digits=2 label=분류 수량",
-  "program": "; 제품 투입\nLD X3\nOUT Y25\n\n; 운전 지령 자기유지\nLD X0\nOR M0\nAND X1\nOUT M0\nOUT Y20\n\n; 푸셔가 동작 중이면 컨베이어 정지\nLD M0\nANI M1\nOUT Y24\n\n; 제품이 밀어내기 위치에 오면 푸셔 기동\nLD X10\nAND M0\nSET M1\n\n; 푸셔 전진\nLD M1\nOUT Y21\n\n; 전진끝에 닿으면 푸셔 동작 끝 -> 복귀\nLD X4\nRST M1\n\n; 밀어낸 개수 세기\nLDP X4\nOUT C0 K9999\n\nLD SM400\nBCD C0 K2Y30\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nPB FEEDB X3 label=제품 투입 color=blue\nCONV CV1 run=Y24 feed=Y25 sens=X10@0.6 push=CYL1@0.6 len=3 label=컨베이어\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=0.6 label=푸셔\nLAMP RUNL Y20 color=green label=운전등\nSEG7 DISP Y30 digits=2 label=분류 수량",
+  "program": "; 제품 투입\nLD X3\nOUT Y25\n\n; 운전 지령 자기유지\nLD X0\nOR M0\nANI X1\nOUT M0\nOUT Y20\n\n; 푸셔가 동작 중이면 컨베이어 정지\nLD M0\nANI M1\nOUT Y24\n\n; 제품이 밀어내기 위치에 오면 푸셔 기동\nLD X10\nAND M0\nSET M1\n\n; 푸셔 전진\nLD M1\nOUT Y21\n\n; 전진끝에 닿으면 푸셔 동작 끝 -> 복귀\nLD X4\nRST M1\n\n; 밀어낸 개수 세기\nLDP X4\nOUT C0 K9999\n\nLD SM400\nBCD C0 K2Y30\nEND",
   "test": "START=1 -> Y24=1 M0=1\nSTART=0 FEEDB=1 -> CV1=1\nFEEDB=0 t=1.6 -> M1=1 Y21=1 Y24=0\nt=1.2 -> CV1=0 CN0=1 M1=0 Y21=0 DISP=1\nt=1 -> CYL1=ret Y24=1",
   "monitor": "M0 M1 Y24 Y21 CN0"
  },
@@ -2476,8 +2477,8 @@
   "title": "2호기 먼저, 2초 뒤 1호기",
   "desc": "기동 버튼을 누르면 2호기(하류)가 먼저 돌고, 2초 뒤에 1호기(상류) 가 돕니다. 조작판에서 두 컨베이어가 차례로 움직이는 것을 보세요.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nCONV CV1 run=Y24 len=2 label=1호기 상류\nCONV CV2 run=Y26 len=2 label=2호기 하류\nLAMP RUNL Y20 color=green label=운전등",
-  "program": "; 운전 지령 자기유지\nLD X0\nOR M0\nAND X1\nOUT M0\nOUT Y20\n\n; 하류(2호기) 는 바로 기동\nLD M0\nOUT Y26\n\n; 기동 후 2초\nLD M0\nOUT T1 K20\n\n; 상류(1호기) 는 2초 뒤에 기동\nLD T1\nOUT Y24\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nCONV CV1 run=Y24 len=2 label=1호기 상류\nCONV CV2 run=Y26 len=2 label=2호기 하류\nLAMP RUNL Y20 color=green label=운전등",
+  "program": "; 운전 지령 자기유지\nLD X0\nOR M0\nANI X1\nOUT M0\nOUT Y20\n\n; 하류(2호기) 는 바로 기동\nLD M0\nOUT Y26\n\n; 기동 후 2초\nLD M0\nOUT T1 K20\n\n; 상류(1호기) 는 2초 뒤에 기동\nLD T1\nOUT Y24\nEND",
   "test": "START=1 -> Y26=1 Y24=0\nSTART=0 t=2.2 -> Y24=1 Y26=1\nSTOPB=1 -> Y24=0 Y26=0",
   "monitor": "M0 T1 Y24 Y26"
  },
@@ -2490,8 +2491,8 @@
   "title": "기동은 역순, 정지도 역순",
   "desc": "정지 버튼을 누르면 1호기가 즉시 서고, 2호기는 2초 더 돌다가 멈춥니다. 하류 회로의 OR Y26 + ANI T2 가 \"정지 후에도 잠시 더 유지\" 를 만드는 형태입니다. 컨베이어가 3대, 4대여도 같은 방법으로 이어 붙이면 됩니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 nc=1 label=정지 color=red\nCONV CV1 run=Y24 len=2 label=1호기 상류\nCONV CV2 run=Y26 len=2 label=2호기 하류\nLAMP RUNL Y20 color=green label=운전등",
-  "program": "; 운전 지령 자기유지\nLD X0\nOR M0\nAND X1\nOUT M0\nOUT Y20\n\n; 정지하면 2초를 센다\nLDI M0\nOUT T2 K20\n\n; 하류(2호기) : 기동하면 바로 · 정지 후 2초 더 운전\nLD M0\nOR Y26\nANI T2\nOUT Y26\n\n; 기동 후 2초\nLD M0\nOUT T1 K20\n\n; 상류(1호기) : 2초 뒤 기동 · 정지하면 바로 멈춤\nLD T1\nOR Y24\nAND M0\nOUT Y24\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOPB X1 label=정지 color=red\nCONV CV1 run=Y24 len=2 label=1호기 상류\nCONV CV2 run=Y26 len=2 label=2호기 하류\nLAMP RUNL Y20 color=green label=운전등",
+  "program": "; 운전 지령 자기유지\nLD X0\nOR M0\nANI X1\nOUT M0\nOUT Y20\n\n; 정지하면 2초를 센다\nLDI M0\nOUT T2 K20\n\n; 하류(2호기) : 기동하면 바로 · 정지 후 2초 더 운전\nLD M0\nOR Y26\nANI T2\nOUT Y26\n\n; 기동 후 2초\nLD M0\nOUT T1 K20\n\n; 상류(1호기) : 2초 뒤 기동 · 정지하면 바로 멈춤\nLD T1\nOR Y24\nAND M0\nOUT Y24\nEND",
   "test": "START=1 -> Y26=1 Y24=0\nSTART=0 t=2.2 -> Y24=1 Y26=1\nSTOPB=1 -> Y24=0 Y26=1\nSTOPB=0 t=2.2 -> Y26=0",
   "monitor": "M0 T1 T2 Y24 Y26"
  },
@@ -2504,7 +2505,7 @@
   "title": "스텝 3개를 타이머로 넘겨 보기",
   "desc": "기동 버튼을 누르고 표시등을 보세요. 대기 → 스텝1 → 스텝2 → 대기 로 2초마다 한 칸씩 넘어갑니다. 오른쪽 디바이스 모니터에서 M0 M1 M2 를 보면 언제나 하나만 ON 인 것을 확인할 수 있습니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=실린더\nLAMP S0 Y20 color=white label=대기\nLAMP S1 Y28 color=green label=스텝1\nLAMP S2 Y29 color=yellow label=스텝2",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=실린더\nLAMP S0 Y20 color=white label=대기\nLAMP S1 Y28 color=green label=스텝1\nLAMP S2 Y29 color=yellow label=스텝2",
   "program": "; RUN 첫 스캔에 0번 스텝(대기)을 켠다\nLD SM402\nSET M0\n\n; 스텝0 → 스텝1 : 기동 버튼을 누르면\nLD M0\nAND X0\nSET M1\nRST M0\n\n; 스텝1 에서 2초 세기\nLD M1\nOUT T0 K20\n\n; 스텝1 → 스텝2 : 2초가 지나면\nLD M1\nAND T0\nSET M2\nRST M1\n\n; 스텝2 에서 2초 세기\nLD M2\nOUT T1 K20\n\n; 스텝2 → 스텝0 : 2초가 지나면 처음으로\nLD M2\nAND T1\nSET M0\nRST M2\n\n; 스텝 표시등\nLD M0\nOUT Y20\nLD M1\nOUT Y28\nLD M2\nOUT Y29\nEND",
   "test": "-> M0=1 S0=1\nSTART=1 scan=1 -> M1=1 M0=0\nSTART=0 t=2.2 -> M2=1 M1=0 S2=1\nt=2.2 -> M0=1 M2=0 S0=1",
   "monitor": "M0 M1 M2 T0 T1"
@@ -2518,7 +2519,7 @@
   "title": "잘못된 예 — RST 를 빠뜨린 회로",
   "desc": "버튼을 눌러 보세요. 표시등이 하나씩 늘어나기만 하고 꺼지지 않습니다. M0 M1 M2 가 전부 ON 이 되어 \"지금 어느 스텝인지\" 를 알 수 없게 됩니다. 그래서 SET 다음 줄에 반드시 RST 를 써서 앞 스텝을 꺼야 합니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=실린더\nLAMP S0 Y20 color=white label=대기\nLAMP S1 Y28 color=green label=스텝1\nLAMP S2 Y29 color=yellow label=스텝2",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=실린더\nLAMP S0 Y20 color=white label=대기\nLAMP S1 Y28 color=green label=스텝1\nLAMP S2 Y29 color=yellow label=스텝2",
   "program": "; RST 를 일부러 빼 보았다 (잘못된 예!)\nLD SM402\nSET M0\n\nLD M0\nAND X0\nSET M1\n\nLD M1\nOUT T0 K20\n\nLD M1\nAND T0\nSET M2\n\nLD M0\nOUT Y20\nLD M1\nOUT Y28\nLD M2\nOUT Y29\nEND",
   "test": "-> M0=1\nSTART=1 scan=1 -> M0=1 M1=1\nSTART=0 t=2.2 -> M0=1 M1=1 M2=1",
   "monitor": "M0 M1 M2"
@@ -2532,7 +2533,7 @@
   "title": "리셋 버튼으로 처음 스텝으로 돌리기",
   "desc": "기동해서 스텝1 로 간 뒤 리셋 버튼을 눌러 보세요. 바로 대기 스텝으로 돌아옵니다. 초기화 조건은 SM402(전원 투입) 또는 X2(리셋 버튼) 이므로 병렬(OR)로 묶습니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=실린더\nLAMP S0 Y20 color=white label=대기\nLAMP S1 Y28 color=green label=스텝1\nLAMP S2 Y29 color=yellow label=스텝2",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=실린더\nLAMP S0 Y20 color=white label=대기\nLAMP S1 Y28 color=green label=스텝1\nLAMP S2 Y29 color=yellow label=스텝2",
   "program": "; RUN 첫 스캔 또는 리셋 버튼 → 대기 스텝(M0)으로\nLD SM402\nOR X2\nSET M0\nLD SM402\nOR X2\nRST M1\nLD SM402\nOR X2\nRST M2\n\n; 대기 → 스텝1\nLD M0\nAND X0\nSET M1\nRST M0\n\n; 표시등\nLD M0\nOUT Y20\nLD M1\nOUT Y28\nEND",
   "test": "-> M0=1 S0=1\nSTART=1 scan=1 -> M1=1 M0=0\nSTART=0 RST1=1 scan=1 -> M0=1 M1=0\nRST1=0 -> M0=1 S0=1",
   "monitor": "M0 M1 M2"
@@ -2546,7 +2547,7 @@
   "title": "스텝으로 실린더 왕복시키기",
   "desc": "기동 버튼을 누르면 실린더가 전진 → 후진 → 대기 로 한 바퀴 돌고 멈춥니다. 여기서 중요한 것은 두 가지입니다. 전이 조건은 센서 — \"시간이 지나서\" 가 아니라 \"전진끝에 도착해서\" 넘어갑니다. 훨씬 안전합니다. 출력은 스텝에만 매달려 있다 — LD M1 / OUT Y21 한 줄…",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=실린더\nLAMP S0 Y20 color=white label=대기\nLAMP S1 Y28 color=green label=스텝1\nLAMP S2 Y29 color=yellow label=스텝2",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=실린더\nLAMP S0 Y20 color=white label=대기\nLAMP S1 Y28 color=green label=스텝1\nLAMP S2 Y29 color=yellow label=스텝2",
   "program": "; 초기화 스텝\nLD SM402\nSET M0\n\n; 대기 → 전진 : 기동 버튼\nLD M0\nAND X0\nSET M1\nRST M0\n\n; 전진 → 후진 : 전진끝 센서(X4)\nLD M1\nAND X4\nSET M2\nRST M1\n\n; 후진 → 대기 : 후진끝 센서(X5)\nLD M2\nAND X5\nSET M0\nRST M2\n\n; 스텝1 에서만 솔레노이드 ON (전진)\nLD M1\nOUT Y21\n\n; 스텝 표시등\nLD M0\nOUT Y20\nLD M1\nOUT Y28\nLD M2\nOUT Y29\nEND",
   "test": "-> M0=1 CYL1=ret S0=1\nSTART=1 scan=1 -> M1=1 Y21=1\nSTART=0 t=1.2 -> M2=1 Y21=0\nt=1.2 -> CYL1=ret M0=1",
   "monitor": "M0 M1 M2 Y21"
@@ -2560,7 +2561,7 @@
   "title": "A+ B+ A− B− 시퀀스",
   "desc": "기동 버튼을 누르고 두 실린더를 보세요. 설계표에 적은 순서 그대로 움직입니다. 프로그램이 딱 두 덩어리로 나뉘어 있는 것을 보세요. 위쪽 — 스텝을 넘기는 회로 (전이 조건). 모두 같은 모양입니다. 아래쪽 — 스텝마다 출력을 내는 회로. 한 줄짜리입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL A1 a=Y21 b=Y22 ext=X4 ret=X5 time=1 label=A 실린더\nCYL B1 a=Y23 b=Y24 ext=X6 ret=X7 time=1 label=B 실린더\nLAMP RUN Y20 color=green label=운전등",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL A1 a=Y21 b=Y22 ext=X4 ret=X5 time=1 label=A 실린더\nCYL B1 a=Y23 b=Y24 ext=X6 ret=X7 time=1 label=B 실린더\nLAMP RUN Y20 color=green label=운전등",
   "program": "; 초기화 스텝\nLD SM402\nSET M0\n\n; 대기 → A 전진\nLD M0\nAND X0\nSET M1\nRST M0\n\n; A 전진끝 → B 전진\nLD M1\nAND X4\nSET M2\nRST M1\n\n; B 전진끝 → A 후진\nLD M2\nAND X6\nSET M3\nRST M2\n\n; A 후진끝 → B 후진\nLD M3\nAND X5\nSET M4\nRST M3\n\n; B 후진끝 → 대기\nLD M4\nAND X7\nSET M0\nRST M4\n\n; 스텝별 출력 (전이 조건과 완전히 분리)\nLD M1\nOUT Y21\nLD M3\nOUT Y22\nLD M2\nOUT Y23\nLD M4\nOUT Y24\nEND",
   "test": "-> M0=1 A1=ret B1=ret\nSTART=1 scan=1 -> M1=1 Y21=1\nSTART=0 t=1.2 -> M2=1 A1=ext Y23=1\nt=1.2 -> M3=1 B1=ext Y22=1\nt=1.2 -> M4=1 A1=ret Y24=1\nt=1.2 -> M0=1 B1=ret",
   "monitor": "M0 M1 M2 M3 M4"
@@ -2574,8 +2575,8 @@
   "title": "정지 · 재시작이 되는 시퀀스",
   "desc": "기동한 뒤 실린더가 움직이는 도중에 정지 버튼을 눌러 보세요. 실린더가 그 자리에 멈춰 섭니다(양솔이라 위치 유지). 다시 기동을 누르면 멈춘 자리에서 이어서 갑니다. 여기서는 대기 스텝에서 바로 다음 스텝으로 넘어가므로 운전 중에는 계속 반복합니다 (연속 운전).",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL A1 a=Y21 b=Y22 ext=X4 ret=X5 time=1 label=A 실린더\nCYL B1 a=Y23 b=Y24 ext=X6 ret=X7 time=1 label=B 실린더\nLAMP RUN Y20 color=green label=운전등",
-  "program": "; 기동 · 정지 (운전 릴레이 자기유지)\nLD X0\nOR M20\nAND X1\nOUT M20\n\n; 초기화 스텝 · 리셋\nLD SM402\nOR X2\nSET M0\nLD SM402\nOR X2\nRST M1\nLD SM402\nOR X2\nRST M2\n\n; 대기 → A 전진 (운전 중일 때만)\nLD M20\nAND M0\nSET M1\nRST M0\n\n; A 전진끝 → A 후진\nLD M20\nAND M1\nAND X4\nSET M2\nRST M1\n\n; A 후진끝 → 대기\nLD M20\nAND M2\nAND X5\nSET M0\nRST M2\n\n; 출력 (운전 중에만 나간다)\nLD M1\nAND M20\nOUT Y21\nLD M2\nAND M20\nOUT Y22\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL A1 a=Y21 b=Y22 ext=X4 ret=X5 time=1 label=A 실린더\nCYL B1 a=Y23 b=Y24 ext=X6 ret=X7 time=1 label=B 실린더\nLAMP RUN Y20 color=green label=운전등",
+  "program": "; 기동 · 정지 (운전 릴레이 자기유지)\nLD X0\nOR M20\nANI X1\nOUT M20\n\n; 초기화 스텝 · 리셋\nLD SM402\nOR X2\nSET M0\nLD SM402\nOR X2\nRST M1\nLD SM402\nOR X2\nRST M2\n\n; 대기 → A 전진 (운전 중일 때만)\nLD M20\nAND M0\nSET M1\nRST M0\n\n; A 전진끝 → A 후진\nLD M20\nAND M1\nAND X4\nSET M2\nRST M1\n\n; A 후진끝 → 대기\nLD M20\nAND M2\nAND X5\nSET M0\nRST M2\n\n; 출력 (운전 중에만 나간다)\nLD M1\nAND M20\nOUT Y21\nLD M2\nAND M20\nOUT Y22\nEND",
   "test": "-> M0=1 M20=0\nSTART=1 t=0.3 -> M20=1 M1=1 Y21=1\nSTOP=1 t=0.3 -> M20=0 Y21=0 A1=mid\nSTOP=0 START=1 t=1.0 -> M20=1 M2=1 Y22=1\nt=1.5 -> M1=1 Y21=1",
   "monitor": "M20 M0 M1 M2"
  },
@@ -2588,7 +2589,7 @@
   "title": "리셋 버튼 → 원점 복귀",
   "desc": "조작판에서 A 실린더를 전진시켜 놓고(또는 앞 회로를 돌리다 멈추고) 리셋 버튼을 눌러 보세요. 후진끝까지 돌아가면 원점등이 켜집니다. 실제 설비에서는 원점등이 켜져야만 기동이 되도록 만듭니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL A1 a=Y21 b=Y22 ext=X4 ret=X5 time=1 label=A 실린더\nCYL B1 a=Y23 b=Y24 ext=X6 ret=X7 time=1 label=B 실린더\nLAMP RUN Y20 color=green label=운전등",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nPB RST1 X2 label=리셋 color=yellow\nCYL A1 a=Y21 b=Y22 ext=X4 ret=X5 time=1 label=A 실린더\nCYL B1 a=Y23 b=Y24 ext=X6 ret=X7 time=1 label=B 실린더\nLAMP RUN Y20 color=green label=운전등",
   "program": "; 리셋 버튼 → 스텝을 지우고 원점 복귀 시작\nLD X2\nSET M30\nLD X2\nRST M1\nLD X2\nRST M2\nLD X2\nSET M0\n\n; 원점 복귀 중에는 후진 솔레노이드 ON\nLD M30\nOUT Y22\n\n; 후진끝에 오면 복귀 완료\nLD M30\nAND X5\nRST M30\n\n; 원점 램프 (복귀 중이 아니고 후진끝이면 점등)\nLDI M30\nAND X5\nOUT Y20\nEND",
   "test": "A1=1 t=0.1 -> A1=ext Y20=0\nRST1=1 scan=1 -> M30=1\nRST1=0 t=1.2 -> M30=0 A1=ret Y20=1 M0=1",
   "monitor": "M30 M0 M1 M2"
@@ -3162,8 +3163,8 @@
   "title": "GX Works 로 옮길 예제 회로",
   "desc": "이 회로를 📝 리스트 로 열어 복사해 보세요. 아래와 같은 글자 그대로 GX Works2 의 리스트 편집 창에 붙여 넣으면 됩니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어 모터\nBUZ BZ1 Y2F label=경보",
-  "program": "; 기동 · 정지 · 비상정지 컨베이어 운전\n@X0 기동 버튼\n@X1 정지 버튼\n@X2 비상정지\nLD X0\nOR Y20\nAND X1\nAND X2\nOUT Y20\n\n; 운전등이 켜지면 컨베이어를 돌린다\nLD Y20\nOUT Y21\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어 모터\nBUZ BZ1 Y2F label=경보",
+  "program": "; 기동 · 정지 · 비상정지 컨베이어 운전\n@X0 기동 버튼\n@X1 정지 버튼\n@X2 비상정지\nLD X0\nOR Y20\nANI X1\nANI X2\nOUT Y20\n\n; 운전등이 켜지면 컨베이어를 돌린다\nLD Y20\nOUT Y21\nEND",
   "test": "START=1 -> Y20=1 Y21=1\nSTART=0 -> Y20=1\nEMG1=1 -> Y20=0\nEMG1=0 START=1 -> Y20=1\nSTOP=1 -> Y20=0",
   "monitor": "X0 X1 X2 Y20"
  },
@@ -3176,8 +3177,8 @@
   "title": "모니터로 확인하기 좋은 타이머 회로",
   "desc": "오른쪽 디바이스 모니터에서 T0 의 현재값이 0 → 30 으로 올라가는 것을 보세요. GX Works 의 온라인 모니터에서도 타이머 코일 아래에 현재값/설정값 이 똑같이 표시됩니다. 실물 PLC 에서 이 숫자를 보는 것이 디버깅의 기본입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어 모터\nBUZ BZ1 Y2F label=경보",
-  "program": "; 기동 3초 뒤에 컨베이어가 돈다 (예열 시간)\nLD X0\nOR Y20\nAND X1\nAND X2\nOUT Y20\n\n@T0 예열 타이머\nLD Y20\nOUT T0 K30\nLD T0\nOUT Y21\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어 모터\nBUZ BZ1 Y2F label=경보",
+  "program": "; 기동 3초 뒤에 컨베이어가 돈다 (예열 시간)\nLD X0\nOR Y20\nANI X1\nANI X2\nOUT Y20\n\n@T0 예열 타이머\nLD Y20\nOUT T0 K30\nLD T0\nOUT Y21\nEND",
   "test": "START=1 -> Y20=1 Y21=0\nt=3.2 -> Y21=1\nSTOP=1 -> Y20=0 Y21=0",
   "monitor": "Y20 T0 Y21"
  },
@@ -3190,8 +3191,8 @@
   "title": "코멘트와 설명문을 붙인 프로그램",
   "desc": "; 로 시작하는 줄은 회로 설명문(GX Works 의 \"스테이트먼트\"), @ 줄은 디바이스 코멘트입니다. 래더 그림 위와 접점 아래에 어떻게 표시되는지 확인하세요.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어 모터\nBUZ BZ1 Y2F label=경보",
-  "program": "; ── 비상정지 감시 ──────────────\n@X2 비상정지 (b 접점)\n@Y2F 경보 부저\nLDI X2\nOUT Y2F\n\n; ── 운전 자기유지 ──────────────\n@X0 기동 PB\n@X1 정지 PB (b 접점)\n@Y20 운전등\nLD X0\nOR Y20\nAND X1\nAND X2\nOUT Y20\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어 모터\nBUZ BZ1 Y2F label=경보",
+  "program": "; ── 비상정지 감시 ──────────────\n@X2 비상정지 (b 접점)\n@Y2F 경보 부저\nLD X2\nOUT Y2F\n\n; ── 운전 자기유지 ──────────────\n@X0 기동 PB\n@X1 정지 PB (b 접점)\n@Y20 운전등\nLD X0\nOR Y20\nANI X1\nANI X2\nOUT Y20\nEND",
   "test": "START=1 -> Y20=1 Y2F=0\nEMG1=1 -> Y20=0 Y2F=1\nEMG1=0 -> Y2F=0",
   "monitor": "X2 Y20 Y2F"
  },
@@ -3204,7 +3205,7 @@
   "title": "원격 지령으로 운전하기",
   "desc": "디바이스 모니터에서 M100 을 1 로 바꾸면 컨베이어가 돌고, M101 을 1 로 바꾸면 멈춥니다. 실제 연결에서는 이 M100 · M101 을 PC 프로그램이 MC 프로토콜로 씁니다.",
   "rack": "",
-  "io": "PB START X0 label=현장 기동 color=green\nPB STOP X1 nc=1 label=현장 정지 color=red\nSEL LOC X3 txt=로컬/원격 label=운전 선택\nPROX PR1 X4 label=제품 감지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP RMT Y22 color=blue label=원격 모드등\nBUZ BZ1 Y2F label=통신 이상 경보",
+  "io": "PB START X0 label=현장 기동 color=green\nPB STOP X1 label=현장 정지 color=red\nSEL LOC X3 txt=로컬/원격 label=운전 선택\nPROX PR1 X4 label=제품 감지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP RMT Y22 color=blue label=원격 모드등\nBUZ BZ1 Y2F label=통신 이상 경보",
   "program": "; 상위 PC 가 MC 프로토콜로 쓰는 원격 지령\n@M100 원격 기동 지령\n@M101 원격 정지 지령\nLD M100\nOR Y20\nANI M101\nOUT Y20\n\nLD Y20\nOUT Y21\nEND",
   "test": "M100=1 -> Y20=1 Y21=1\nM100=0 -> Y20=1\nM101=1 -> Y20=0\nM101=0 -> Y20=0",
   "monitor": "M100 M101 Y20"
@@ -3218,8 +3219,8 @@
   "title": "로컬 / 원격 전환",
   "desc": "실제 설비는 대부분 이렇게 두 가지 운전 모드를 가집니다. 로컬 — 현장 버튼으로만 조작 (정비 · 시운전 때) 원격 — 상위 시스템의 지령으로 조작 (정상 생산 때) 선택 스위치가 로컬일 때 M100 을 1 로 바꿔 보세요. 아무 일도 일어나지 않습니다 — 이것이 안전 설계입니다.",
   "rack": "",
-  "io": "PB START X0 label=현장 기동 color=green\nPB STOP X1 nc=1 label=현장 정지 color=red\nSEL LOC X3 txt=로컬/원격 label=운전 선택\nPROX PR1 X4 label=제품 감지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP RMT Y22 color=blue label=원격 모드등\nBUZ BZ1 Y2F label=통신 이상 경보",
-  "program": "; 운전 선택: OFF = 로컬(현장 버튼) · ON = 원격(통신 지령)\n@X3 로컬/원격 선택\nLD X0\nANI X3\nLD M100\nAND X3\nORB\nOR Y20\nAND X1\nANI M101\nOUT Y20\n\nLD X3\nOUT Y22\n\nLD Y20\nOUT Y21\nEND",
+  "io": "PB START X0 label=현장 기동 color=green\nPB STOP X1 label=현장 정지 color=red\nSEL LOC X3 txt=로컬/원격 label=운전 선택\nPROX PR1 X4 label=제품 감지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP RMT Y22 color=blue label=원격 모드등\nBUZ BZ1 Y2F label=통신 이상 경보",
+  "program": "; 운전 선택: OFF = 로컬(현장 버튼) · ON = 원격(통신 지령)\n@X3 로컬/원격 선택\nLD X0\nANI X3\nLD M100\nAND X3\nORB\nOR Y20\nANI X1\nANI M101\nOUT Y20\n\nLD X3\nOUT Y22\n\nLD Y20\nOUT Y21\nEND",
   "test": "START=1 -> Y20=1 Y22=0\nSTART=0 -> Y20=1\nSTOP=1 -> Y20=0\nSTOP=0 M100=1 -> Y20=0\nLOC=1 -> Y20=1 Y22=1\nM100=0 M101=1 -> Y20=0",
   "monitor": "X3 M100 Y20 Y22"
  },
@@ -3232,7 +3233,7 @@
   "title": "상태 데이터를 D 에 올려 두기",
   "desc": "상위 PC 는 D200 부터 몇 워드 를 주기적으로 읽어 갑니다. 이렇게 보여 줄 데이터를 한 곳에 모아 두면 통신이 간단해지고 빨라집니다. 실무에서는 D200~D299 를 \"상위 통신 영역\" 으로 정해 두고 문서에 적어 둡니다.",
   "rack": "",
-  "io": "PB START X0 label=현장 기동 color=green\nPB STOP X1 nc=1 label=현장 정지 color=red\nSEL LOC X3 txt=로컬/원격 label=운전 선택\nPROX PR1 X4 label=제품 감지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP RMT Y22 color=blue label=원격 모드등\nBUZ BZ1 Y2F label=통신 이상 경보",
+  "io": "PB START X0 label=현장 기동 color=green\nPB STOP X1 label=현장 정지 color=red\nSEL LOC X3 txt=로컬/원격 label=운전 선택\nPROX PR1 X4 label=제품 감지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP RMT Y22 color=blue label=원격 모드등\nBUZ BZ1 Y2F label=통신 이상 경보",
   "program": "; D200 = 운전 상태 (0 정지 · 1 운전)\nLD SM400\nMOV K0 D200\nLD Y20\nMOV K1 D200\n\n; D201 = 생산 수량\n@X4 제품 감지 센서\nLDP X4\nINC D201\n\n; D202 = 현재 스캔 시간 (설비 건강 상태)\nLD SM400\nMOV SD520 D202\n\n; 원격 운전\nLD M100\nOR Y20\nANI M101\nOUT Y20\nEND",
   "test": "-> D200=0\nM100=1 -> D200=1\nPR1=1 -> D201=1\n-> D202>0",
   "monitor": "D200 D201 D202"
@@ -3246,7 +3247,7 @@
   "title": "하트비트로 통신 두절 감시",
   "desc": "디바이스 모니터에서 D210 값을 바꾸지 않고 3초 기다리면 통신 이상 경보 가 울립니다. 값을 바꾸면 곧 꺼집니다.통신선이 빠지거나 PC 가 멈춰도 PLC 는 마지막 지령 상태 그대로 계속 돕니다. 그래서 살아 있는지 확인하는 신호(하트비트) 가 꼭 필요합니다.",
   "rack": "",
-  "io": "PB START X0 label=현장 기동 color=green\nPB STOP X1 nc=1 label=현장 정지 color=red\nSEL LOC X3 txt=로컬/원격 label=운전 선택\nPROX PR1 X4 label=제품 감지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP RMT Y22 color=blue label=원격 모드등\nBUZ BZ1 Y2F label=통신 이상 경보",
+  "io": "PB START X0 label=현장 기동 color=green\nPB STOP X1 label=현장 정지 color=red\nSEL LOC X3 txt=로컬/원격 label=운전 선택\nPROX PR1 X4 label=제품 감지\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP RMT Y22 color=blue label=원격 모드등\nBUZ BZ1 Y2F label=통신 이상 경보",
   "program": "; 상위 PC 가 1초마다 D210 값을 바꿔 준다 (하트비트)\n; 3초 동안 안 바뀌면 통신 두절로 본다\n@D210 상위 하트비트\nLD= D210 D211\nOUT T0 K30\n\n; 값이 바뀌면 받아 두고 타이머를 다시 시작\nLD<> D210 D211\nMOV D210 D211\n\nLD T0\nOUT Y2F\nEND",
   "test": "t=3.5 -> Y2F=1\nD210=5 -> Y2F=0\nt=3.5 -> Y2F=1",
   "monitor": "D210 D211 T0 Y2F"
@@ -3260,8 +3261,8 @@
   "title": "운전 준비 조건 — 비상정지가 풀려야 기동",
   "desc": "운전 준비(M0) 라는 중간 신호를 만들어 두면, 조건이 늘어나도 회로가 지저분해지지 않습니다. 실무에서는 여기에 도어 스위치 · 에어압 · 인버터 준비완료 같은 조건이 함께 들어갑니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nSEL MODE X3 txt=수동/자동 label=운전 모드\nPB JOG X4 label=수동 조그 color=blue\nPROX PR1 X5 label=제품 감지\nPB RSTB X6 label=이상 리셋 color=yellow\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP ERRL Y23 color=red label=이상등\nBUZ BZ1 Y2F label=경보 부저",
-  "program": "; 비상정지가 풀려 있고 이상이 없어야 운전 준비\n@X2 비상정지 (b 접점)\n@M0 운전 준비\nLD X2\nANI Y23\nOUT M0\n\n; 준비 상태에서만 기동 · 자기유지\nLD X0\nAND M0\nOR Y20\nAND X1\nAND M0\nOUT Y20\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nSEL MODE X3 txt=수동/자동 label=운전 모드\nPB JOG X4 label=수동 조그 color=blue\nPROX PR1 X5 label=제품 감지\nPB RSTB X6 label=이상 리셋 color=yellow\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP ERRL Y23 color=red label=이상등\nBUZ BZ1 Y2F label=경보 부저",
+  "program": "; 비상정지가 풀려 있고 이상이 없어야 운전 준비\n@X2 비상정지 (b 접점)\n@M0 운전 준비\nLDI X2\nANI Y23\nOUT M0\n\n; 준비 상태에서만 기동 · 자기유지\nLD X0\nAND M0\nOR Y20\nANI X1\nAND M0\nOUT Y20\nEND",
   "test": "START=1 -> Y20=1 M0=1\nSTART=0 -> Y20=1\nEMG1=1 -> Y20=0 M0=0\nEMG1=0 -> M0=1\nSTART=1 -> Y20=1\nSTOP=1 -> Y20=0",
   "monitor": "X2 M0 Y20"
  },
@@ -3274,8 +3275,8 @@
   "title": "수동 / 자동 전환과 조그 운전",
   "desc": "운전 모드 스위치를 수동 에 두고 조그 버튼을 눌러 보세요. 누르는 동안만 컨베이어가 돕니다. 자동 으로 바꾸면 기동 버튼으로 운전합니다.시운전 5단계(수동 운전)에서 이 회로로 각 장치의 방향과 동작을 하나씩 확인합니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nSEL MODE X3 txt=수동/자동 label=운전 모드\nPB JOG X4 label=수동 조그 color=blue\nPROX PR1 X5 label=제품 감지\nPB RSTB X6 label=이상 리셋 color=yellow\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP ERRL Y23 color=red label=이상등\nBUZ BZ1 Y2F label=경보 부저",
-  "program": "LD X2\nANI Y23\nOUT M0\n\n; 자동 모드에서만 기동 · 자기유지\nLD X0\nAND M0\nOR Y20\nAND X1\nAND M0\nAND X3\nOUT Y20\n\n; 수동: 조그 버튼을 누르는 동안만\n@X4 수동 조그 버튼\nLD X4\nANI X3\nAND M0\nOUT M20\n\n; 자동: 운전 중이면 계속\nLD Y20\nAND X3\nOUT M21\n\nLD M20\nOR M21\nOUT Y21\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nSEL MODE X3 txt=수동/자동 label=운전 모드\nPB JOG X4 label=수동 조그 color=blue\nPROX PR1 X5 label=제품 감지\nPB RSTB X6 label=이상 리셋 color=yellow\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP ERRL Y23 color=red label=이상등\nBUZ BZ1 Y2F label=경보 부저",
+  "program": "LDI X2\nANI Y23\nOUT M0\n\n; 자동 모드에서만 기동 · 자기유지\nLD X0\nAND M0\nOR Y20\nANI X1\nAND M0\nAND X3\nOUT Y20\n\n; 수동: 조그 버튼을 누르는 동안만\n@X4 수동 조그 버튼\nLD X4\nANI X3\nAND M0\nOUT M20\n\n; 자동: 운전 중이면 계속\nLD Y20\nAND X3\nOUT M21\n\nLD M20\nOR M21\nOUT Y21\nEND",
   "test": "JOG=1 -> Y21=1 Y20=0\nJOG=0 -> Y21=0\nMODE=1 START=1 -> Y20=1 Y21=1\nSTOP=1 -> Y20=0 Y21=0",
   "monitor": "X3 X4 M20 M21 Y21"
  },
@@ -3288,8 +3289,8 @@
   "title": "이상 감시와 경보 래치",
   "desc": "기동하고 제품 센서를 누르지 않은 채 5초를 기다리면 이상등과 부저 가 동작합니다. 이상은 SET 으로 래치 해서 원인을 없애도 리셋을 눌러야 풀립니다 — 작업자가 상황을 확인하도록 만드는 것입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nSEL MODE X3 txt=수동/자동 label=운전 모드\nPB JOG X4 label=수동 조그 color=blue\nPROX PR1 X5 label=제품 감지\nPB RSTB X6 label=이상 리셋 color=yellow\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP ERRL Y23 color=red label=이상등\nBUZ BZ1 Y2F label=경보 부저",
-  "program": "; 기동 · 정지\nLD X0\nOR Y20\nAND X1\nAND X2\nOUT Y20\n\nLD Y20\nOUT Y21\n\n; 컨베이어가 도는데 5초 동안 제품이 안 오면 이상\n@X5 제품 감지 센서\nLD Y21\nANI X5\nOUT T1 K50\n\nLD T1\nSET Y23\n\nLD Y23\nOUT Y2F\n\n; 리셋 버튼으로 이상 해제\n@X6 이상 리셋\nLDP X6\nRST Y23\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nSEL MODE X3 txt=수동/자동 label=운전 모드\nPB JOG X4 label=수동 조그 color=blue\nPROX PR1 X5 label=제품 감지\nPB RSTB X6 label=이상 리셋 color=yellow\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP ERRL Y23 color=red label=이상등\nBUZ BZ1 Y2F label=경보 부저",
+  "program": "; 기동 · 정지\nLD X0\nOR Y20\nANI X1\nANI X2\nOUT Y20\n\nLD Y20\nOUT Y21\n\n; 컨베이어가 도는데 5초 동안 제품이 안 오면 이상\n@X5 제품 감지 센서\nLD Y21\nANI X5\nOUT T1 K50\n\nLD T1\nSET Y23\n\nLD Y23\nOUT Y2F\n\n; 리셋 버튼으로 이상 해제\n@X6 이상 리셋\nLDP X6\nRST Y23\nEND",
   "test": "START=1 -> Y20=1 Y23=0\nt=5.5 -> Y23=1 Y2F=1\nPR1=1 -> Y23=1\nRSTB=1 -> Y23=0 Y2F=0",
   "monitor": "T1 Y23 Y2F"
  },
@@ -3302,7 +3303,7 @@
   "title": "CPU 진단과 스캔 시간 감시",
   "desc": "SD520(현재 스캔 시간)을 D51 에, 그중 최대값을 D52 에 기록합니다. 스캔 시간이 갑자기 늘면 프로그램이 무거워졌거나 통신이 밀리고 있다는 신호입니다. 실무에서는 이 값을 상위 시스템으로 올려 설비 건강 상태로 감시합니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nSEL MODE X3 txt=수동/자동 label=운전 모드\nPB JOG X4 label=수동 조그 color=blue\nPROX PR1 X5 label=제품 감지\nPB RSTB X6 label=이상 리셋 color=yellow\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP ERRL Y23 color=red label=이상등\nBUZ BZ1 Y2F label=경보 부저",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nSEL MODE X3 txt=수동/자동 label=운전 모드\nPB JOG X4 label=수동 조그 color=blue\nPROX PR1 X5 label=제품 감지\nPB RSTB X6 label=이상 리셋 color=yellow\nLAMP RUNL Y20 color=green label=운전등\nMOTOR CV1 fwd=Y21 label=컨베이어\nLAMP ERRL Y23 color=red label=이상등\nBUZ BZ1 Y2F label=경보 부저",
   "program": "; 진단 에러가 나면 에러 코드를 남겨 둔다\n@SM0 진단 에러\n@SD0 에러 코드\nLD SM0\nMOV SD0 D50\n\n; 현재 스캔 시간과 최대 스캔 시간을 기록한다\n@SD520 현재 스캔 시간\nLD SM400\nMOV SD520 D51\n\nLD> D51 D52\nMOV D51 D52\n\nLD SM0\nOUT Y2F\nEND",
   "test": "t=0.5 -> D51>0 D52>0 Y2F=0\n-> D50=0",
   "monitor": "SD0 D50 D51 D52"
@@ -3316,8 +3317,8 @@
   "title": "녹 → 황 → 적 순환",
   "desc": "운전 버튼을 누르면 녹 → 황 → 적 이 계속 돕니다. 오른쪽 디바이스 모니터에서 D0 가 1 → 2 → 3 → 1 로 바뀌는 것을 보세요.각 스텝이 세 줄(타이머 · 전환 · 출력)로 되어 있는 것이 핵심입니다.",
   "rack": "",
-  "io": "PB START X0 label=운전 color=green\nPB STOP X1 nc=1 label=정지 color=red\nTGL NIGHT X2 label=야간 모드\nPB WALK X3 label=보행자 버튼 color=blue\nLAMP R1 Y20 color=red label=차량 적색\nLAMP Y1 Y21 color=yellow label=차량 황색\nLAMP G1 Y22 color=green label=차량 녹색\nLAMP PR Y23 color=red label=보행 적색\nLAMP PG Y24 color=green label=보행 녹색\nLAMP WREQ Y25 color=orange label=요청 접수",
-  "program": "; ── 운전 · 정지 ──\nLD X0\nOR M0\nAND X1\nOUT M0\n\n; ── 기동하면 스텝 1, 정지하면 스텝 0 ──\nLDP M0\nMOV K1 D0\nLDF M0\nMOV K0 D0\n\n; ── 스텝 1: 차량 녹색 5초 ──\nLD= D0 K1\nOUT T0 K50\nLD T0\nMOV K2 D0\n\n; ── 스텝 2: 차량 황색 2초 ──\nLD= D0 K2\nOUT T1 K20\nLD T1\nMOV K3 D0\n\n; ── 스텝 3: 차량 적색 5초 ──\nLD= D0 K3\nOUT T2 K50\nLD T2\nMOV K1 D0\n\n; ── 출력 ──\nLD= D0 K1\nOUT Y22\nLD= D0 K2\nOUT Y21\nLD= D0 K3\nOUT Y20\nEND",
+  "io": "PB START X0 label=운전 color=green\nPB STOP X1 label=정지 color=red\nTGL NIGHT X2 label=야간 모드\nPB WALK X3 label=보행자 버튼 color=blue\nLAMP R1 Y20 color=red label=차량 적색\nLAMP Y1 Y21 color=yellow label=차량 황색\nLAMP G1 Y22 color=green label=차량 녹색\nLAMP PR Y23 color=red label=보행 적색\nLAMP PG Y24 color=green label=보행 녹색\nLAMP WREQ Y25 color=orange label=요청 접수",
+  "program": "; ── 운전 · 정지 ──\nLD X0\nOR M0\nANI X1\nOUT M0\n\n; ── 기동하면 스텝 1, 정지하면 스텝 0 ──\nLDP M0\nMOV K1 D0\nLDF M0\nMOV K0 D0\n\n; ── 스텝 1: 차량 녹색 5초 ──\nLD= D0 K1\nOUT T0 K50\nLD T0\nMOV K2 D0\n\n; ── 스텝 2: 차량 황색 2초 ──\nLD= D0 K2\nOUT T1 K20\nLD T1\nMOV K3 D0\n\n; ── 스텝 3: 차량 적색 5초 ──\nLD= D0 K3\nOUT T2 K50\nLD T2\nMOV K1 D0\n\n; ── 출력 ──\nLD= D0 K1\nOUT Y22\nLD= D0 K2\nOUT Y21\nLD= D0 K3\nOUT Y20\nEND",
   "test": "-> D0=0 Y20=0 Y22=0\nSTART=1 -> D0=1 Y22=1\nt=5.2 -> D0=2 Y21=1 Y22=0\nt=2.2 -> D0=3 Y20=1\nt=5.2 -> D0=1 Y22=1\nSTOP=1 -> D0=0 Y20=0 Y21=0 Y22=0",
   "monitor": "D0 T0 T1 T2"
  },
@@ -3330,8 +3331,8 @@
   "title": "보행 신호와 점멸 스텝",
   "desc": "보행 녹색이 꺼지기 전에 3초 동안 점멸 합니다 (SM412 = 1초 클럭). 실제 신호등과 같은 동작입니다. LD>= D0 K3 — 스텝 3 또는 4 일 때 차량 적색. 비교 접점 하나로 두 스텝을 묶었습니다. 차량 적색과 보행 녹색이 같은 스텝 에서만 켜지므로, 둘이 동시에 녹색이…",
   "rack": "",
-  "io": "PB START X0 label=운전 color=green\nPB STOP X1 nc=1 label=정지 color=red\nTGL NIGHT X2 label=야간 모드\nPB WALK X3 label=보행자 버튼 color=blue\nLAMP R1 Y20 color=red label=차량 적색\nLAMP Y1 Y21 color=yellow label=차량 황색\nLAMP G1 Y22 color=green label=차량 녹색\nLAMP PR Y23 color=red label=보행 적색\nLAMP PG Y24 color=green label=보행 녹색\nLAMP WREQ Y25 color=orange label=요청 접수",
-  "program": "LD X0\nOR M0\nAND X1\nOUT M0\n\nLDP M0\nMOV K1 D0\nLDF M0\nMOV K0 D0\n\nLD= D0 K1\nOUT T0 K50\nLD T0\nMOV K2 D0\n\nLD= D0 K2\nOUT T1 K20\nLD T1\nMOV K3 D0\n\n; ── 스텝 3: 보행 녹색 4초 ──\nLD= D0 K3\nOUT T2 K40\nLD T2\nMOV K4 D0\n\n; ── 스텝 4: 보행 녹색 점멸 3초 ──\nLD= D0 K4\nOUT T3 K30\nLD T3\nMOV K1 D0\n\n; ── 차량등 ──\nLD= D0 K1\nOUT Y22\nLD= D0 K2\nOUT Y21\nLD>= D0 K3\nOUT Y20\n\n; ── 보행등 ──\nLD M0\nAND<= D0 K2\nOUT Y23\n\nLD= D0 K3\nLD= D0 K4\nAND SM412\nORB\nOUT Y24\nEND",
+  "io": "PB START X0 label=운전 color=green\nPB STOP X1 label=정지 color=red\nTGL NIGHT X2 label=야간 모드\nPB WALK X3 label=보행자 버튼 color=blue\nLAMP R1 Y20 color=red label=차량 적색\nLAMP Y1 Y21 color=yellow label=차량 황색\nLAMP G1 Y22 color=green label=차량 녹색\nLAMP PR Y23 color=red label=보행 적색\nLAMP PG Y24 color=green label=보행 녹색\nLAMP WREQ Y25 color=orange label=요청 접수",
+  "program": "LD X0\nOR M0\nANI X1\nOUT M0\n\nLDP M0\nMOV K1 D0\nLDF M0\nMOV K0 D0\n\nLD= D0 K1\nOUT T0 K50\nLD T0\nMOV K2 D0\n\nLD= D0 K2\nOUT T1 K20\nLD T1\nMOV K3 D0\n\n; ── 스텝 3: 보행 녹색 4초 ──\nLD= D0 K3\nOUT T2 K40\nLD T2\nMOV K4 D0\n\n; ── 스텝 4: 보행 녹색 점멸 3초 ──\nLD= D0 K4\nOUT T3 K30\nLD T3\nMOV K1 D0\n\n; ── 차량등 ──\nLD= D0 K1\nOUT Y22\nLD= D0 K2\nOUT Y21\nLD>= D0 K3\nOUT Y20\n\n; ── 보행등 ──\nLD M0\nAND<= D0 K2\nOUT Y23\n\nLD= D0 K3\nLD= D0 K4\nAND SM412\nORB\nOUT Y24\nEND",
   "test": "START=1 -> D0=1 Y22=1 Y23=1\nt=5.2 -> D0=2 Y21=1\nt=2.2 -> D0=3 Y20=1 Y24=1 Y23=0\nt=4.2 -> D0=4 Y20=1\nt=3.2 -> D0=1 Y24=0 Y23=1",
   "monitor": "D0 Y23 Y24"
  },
@@ -3344,8 +3345,8 @@
   "title": "버튼을 누르면 빨리 건넌다",
   "desc": "운전 중에 보행자 버튼 을 눌러 보세요. 요청 접수등이 켜지고, 차량 녹색이 2초 만에 끝납니다. 버튼을 누르지 않으면 8초 를 다 기다립니다.버튼은 짧게 눌러도 기억되어야 하므로 SET M10 으로 잡아 둡니다 — 4장의 자기유지와 같은 생각입니다.",
   "rack": "",
-  "io": "PB START X0 label=운전 color=green\nPB STOP X1 nc=1 label=정지 color=red\nTGL NIGHT X2 label=야간 모드\nPB WALK X3 label=보행자 버튼 color=blue\nLAMP R1 Y20 color=red label=차량 적색\nLAMP Y1 Y21 color=yellow label=차량 황색\nLAMP G1 Y22 color=green label=차량 녹색\nLAMP PR Y23 color=red label=보행 적색\nLAMP PG Y24 color=green label=보행 녹색\nLAMP WREQ Y25 color=orange label=요청 접수",
-  "program": "LD X0\nOR M0\nAND X1\nOUT M0\n\nLDP M0\nMOV K1 D0\nLDF M0\nMOV K0 D0\n\n; ── 보행자 버튼: 요청을 기억한다 ──\n@X3 보행자 버튼\nLDP X3\nAND M0\nSET M10\nLD M10\nOUT Y25\n\n; ── 스텝 1: 평소 8초, 요청이 있으면 2초 ──\nLD= D0 K1\nOUT T0 K80\nLD= D0 K1\nAND M10\nOUT T4 K20\nLD T0\nOR T4\nMOV K2 D0\n\nLD= D0 K2\nOUT T1 K20\nLD T1\nMOV K3 D0\n\nLD= D0 K3\nOUT T2 K40\nLD T2\nMOV K4 D0\n\n; ── 보행 신호가 되면 요청을 지운다 ──\nLD>= D0 K3\nRST M10\n\nLD= D0 K4\nOUT T3 K30\nLD T3\nMOV K1 D0\n\nLD= D0 K1\nOUT Y22\nLD= D0 K2\nOUT Y21\nLD>= D0 K3\nOUT Y20\nLD M0\nAND<= D0 K2\nOUT Y23\nLD= D0 K3\nLD= D0 K4\nAND SM412\nORB\nOUT Y24\nEND",
+  "io": "PB START X0 label=운전 color=green\nPB STOP X1 label=정지 color=red\nTGL NIGHT X2 label=야간 모드\nPB WALK X3 label=보행자 버튼 color=blue\nLAMP R1 Y20 color=red label=차량 적색\nLAMP Y1 Y21 color=yellow label=차량 황색\nLAMP G1 Y22 color=green label=차량 녹색\nLAMP PR Y23 color=red label=보행 적색\nLAMP PG Y24 color=green label=보행 녹색\nLAMP WREQ Y25 color=orange label=요청 접수",
+  "program": "LD X0\nOR M0\nANI X1\nOUT M0\n\nLDP M0\nMOV K1 D0\nLDF M0\nMOV K0 D0\n\n; ── 보행자 버튼: 요청을 기억한다 ──\n@X3 보행자 버튼\nLDP X3\nAND M0\nSET M10\nLD M10\nOUT Y25\n\n; ── 스텝 1: 평소 8초, 요청이 있으면 2초 ──\nLD= D0 K1\nOUT T0 K80\nLD= D0 K1\nAND M10\nOUT T4 K20\nLD T0\nOR T4\nMOV K2 D0\n\nLD= D0 K2\nOUT T1 K20\nLD T1\nMOV K3 D0\n\nLD= D0 K3\nOUT T2 K40\nLD T2\nMOV K4 D0\n\n; ── 보행 신호가 되면 요청을 지운다 ──\nLD>= D0 K3\nRST M10\n\nLD= D0 K4\nOUT T3 K30\nLD T3\nMOV K1 D0\n\nLD= D0 K1\nOUT Y22\nLD= D0 K2\nOUT Y21\nLD>= D0 K3\nOUT Y20\nLD M0\nAND<= D0 K2\nOUT Y23\nLD= D0 K3\nLD= D0 K4\nAND SM412\nORB\nOUT Y24\nEND",
   "test": "START=1 -> D0=1 Y22=1 Y25=0\nWALK=1 -> M10=1 Y25=1\nWALK=0 t=2.0 -> D0=2\nt=2.2 -> D0=3 Y24=1 M10=0 Y25=0\nt=4.2 -> D0=4\nt=3.2 -> D0=1\nt=7.0 -> D0=1\nt=1.5 -> D0=2",
   "monitor": "M10 Y25 D0 T4"
  },
@@ -3358,8 +3359,8 @@
   "title": "완성 프로그램",
   "desc": "운전 중에 야간 모드 스위치를 켜 보세요. 차량 황색이 2초 주기로 점멸하고 보행 적색이 켜집니다. 다시 끄면 스텝 1 부터 정상 운전이 시작됩니다.모든 스텝 회로 앞에 LD M2 를 붙여 주간일 때만 스텝이 진행 하게 한 것이 핵심입니다.",
   "rack": "",
-  "io": "PB START X0 label=운전 color=green\nPB STOP X1 nc=1 label=정지 color=red\nTGL NIGHT X2 label=야간 모드\nPB WALK X3 label=보행자 버튼 color=blue\nLAMP R1 Y20 color=red label=차량 적색\nLAMP Y1 Y21 color=yellow label=차량 황색\nLAMP G1 Y22 color=green label=차량 녹색\nLAMP PR Y23 color=red label=보행 적색\nLAMP PG Y24 color=green label=보행 녹색\nLAMP WREQ Y25 color=orange label=요청 접수",
-  "program": "; ── 운전 · 정지 ──\nLD X0\nOR M0\nAND X1\nOUT M0\n\n; ── 주간 운전(M2) · 야간 점멸(M3) ──\n@X2 야간 모드 스위치\nLD M0\nANI X2\nOUT M2\nLD M0\nAND X2\nOUT M3\n\n; ── 스텝 초기화 ──\nLDP M2\nMOV K1 D0\nLDF M2\nMOV K0 D0\n\n; ── 보행자 버튼 ──\nLDP X3\nAND M2\nSET M10\nLD M10\nOUT Y25\n\n; ── 스텝 1: 차량 녹색 (평소 8초 · 요청 있으면 2초) ──\nLD M2\nAND= D0 K1\nOUT T0 K80\nLD M2\nAND= D0 K1\nAND M10\nOUT T4 K20\nLD T0\nOR T4\nMOV K2 D0\n\n; ── 스텝 2: 차량 황색 2초 ──\nLD M2\nAND= D0 K2\nOUT T1 K20\nLD T1\nMOV K3 D0\n\n; ── 스텝 3: 보행 녹색 4초 ──\nLD M2\nAND= D0 K3\nOUT T2 K40\nLD T2\nMOV K4 D0\n\nLD M2\nAND>= D0 K3\nRST M10\n\n; ── 스텝 4: 보행 녹색 점멸 3초 ──\nLD M2\nAND= D0 K4\nOUT T3 K30\nLD T3\nMOV K1 D0\n\n; ── 차량 적색 ──\nLD M2\nAND>= D0 K3\nOUT Y20\n\n; ── 차량 황색 (주간 스텝 2 · 야간 점멸) ──\nLD M2\nAND= D0 K2\nLD M3\nAND SM413\nORB\nOUT Y21\n\n; ── 차량 녹색 ──\nLD M2\nAND= D0 K1\nOUT Y22\n\n; ── 보행 적색 ──\nLD M2\nAND<= D0 K2\nOR M3\nOUT Y23\n\n; ── 보행 녹색 (스텝 4 는 점멸) ──\nLD M2\nAND= D0 K3\nLD M2\nAND= D0 K4\nAND SM412\nORB\nOUT Y24\nEND",
+  "io": "PB START X0 label=운전 color=green\nPB STOP X1 label=정지 color=red\nTGL NIGHT X2 label=야간 모드\nPB WALK X3 label=보행자 버튼 color=blue\nLAMP R1 Y20 color=red label=차량 적색\nLAMP Y1 Y21 color=yellow label=차량 황색\nLAMP G1 Y22 color=green label=차량 녹색\nLAMP PR Y23 color=red label=보행 적색\nLAMP PG Y24 color=green label=보행 녹색\nLAMP WREQ Y25 color=orange label=요청 접수",
+  "program": "; ── 운전 · 정지 ──\nLD X0\nOR M0\nANI X1\nOUT M0\n\n; ── 주간 운전(M2) · 야간 점멸(M3) ──\n@X2 야간 모드 스위치\nLD M0\nANI X2\nOUT M2\nLD M0\nAND X2\nOUT M3\n\n; ── 스텝 초기화 ──\nLDP M2\nMOV K1 D0\nLDF M2\nMOV K0 D0\n\n; ── 보행자 버튼 ──\nLDP X3\nAND M2\nSET M10\nLD M10\nOUT Y25\n\n; ── 스텝 1: 차량 녹색 (평소 8초 · 요청 있으면 2초) ──\nLD M2\nAND= D0 K1\nOUT T0 K80\nLD M2\nAND= D0 K1\nAND M10\nOUT T4 K20\nLD T0\nOR T4\nMOV K2 D0\n\n; ── 스텝 2: 차량 황색 2초 ──\nLD M2\nAND= D0 K2\nOUT T1 K20\nLD T1\nMOV K3 D0\n\n; ── 스텝 3: 보행 녹색 4초 ──\nLD M2\nAND= D0 K3\nOUT T2 K40\nLD T2\nMOV K4 D0\n\nLD M2\nAND>= D0 K3\nRST M10\n\n; ── 스텝 4: 보행 녹색 점멸 3초 ──\nLD M2\nAND= D0 K4\nOUT T3 K30\nLD T3\nMOV K1 D0\n\n; ── 차량 적색 ──\nLD M2\nAND>= D0 K3\nOUT Y20\n\n; ── 차량 황색 (주간 스텝 2 · 야간 점멸) ──\nLD M2\nAND= D0 K2\nLD M3\nAND SM413\nORB\nOUT Y21\n\n; ── 차량 녹색 ──\nLD M2\nAND= D0 K1\nOUT Y22\n\n; ── 보행 적색 ──\nLD M2\nAND<= D0 K2\nOR M3\nOUT Y23\n\n; ── 보행 녹색 (스텝 4 는 점멸) ──\nLD M2\nAND= D0 K3\nLD M2\nAND= D0 K4\nAND SM412\nORB\nOUT Y24\nEND",
   "test": "START=1 -> D0=1 Y22=1 Y23=1\nt=8.2 -> D0=2 Y21=1\nt=2.2 -> D0=3 Y20=1 Y24=1\nNIGHT=1 -> Y20=0 Y22=0 Y24=0 Y23=1 M3=1\nt=0.5 -> Y21=1\nt=1.0 -> Y21=0\nNIGHT=0 -> D0=1 Y22=1\nSTOP=1 -> D0=0 Y20=0 Y21=0 Y22=0 Y23=0 Y24=0",
   "monitor": "D0 M2 M3 Y21"
  },
@@ -3372,8 +3373,8 @@
   "title": "기동 · 정지와 제품 투입",
   "desc": "기동 버튼을 누르면 컨베이어 위에 제품(A · B 가 섞여서)이 차례로 놓입니다. LD M0 / ANI T5 / OUT T5 K20 은 스스로 리셋되는 타이머로, 2초마다 1스캔 동안만 T5 가 ON 됩니다 (6장).",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nCONV CV1 run=Y20 feed=Y26 sens=X10@0.15,X11@0.6 senA=X12@0.4 push=CYL1@0.6 len=4 mix=1 end=drop label=컨베이어\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=0.4 label=푸셔\nLAMP RUNL Y22 color=green label=운전등\nLAMP DONEL Y23 color=blue label=완료등\nSEG7 DP1 Y30 digits=3 label=A 제품 수",
-  "program": "; ── 운전 · 정지 · 비상정지 ──\n@X2 비상정지 (b 접점)\nLD X0\nOR M0\nAND X1\nAND X2\nOUT M0\n\nLD M0\nOUT Y22\n\n; ── 운전 중이면 컨베이어 ──\nLD M0\nOUT Y20\n\n; ── 기동하면 바로 한 개, 그 뒤 2초마다 한 개 투입 ──\nLDP M0\nOUT Y27\nLD M0\nANI T5\nOUT T5 K20\nLD T5\nOR Y27\nOUT Y26\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nCONV CV1 run=Y20 feed=Y26 sens=X10@0.15,X11@0.6 senA=X12@0.4 push=CYL1@0.6 len=4 mix=1 end=drop label=컨베이어\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=0.4 label=푸셔\nLAMP RUNL Y22 color=green label=운전등\nLAMP DONEL Y23 color=blue label=완료등\nSEG7 DP1 Y30 digits=3 label=A 제품 수",
+  "program": "; ── 운전 · 정지 · 비상정지 ──\n@X2 비상정지 (b 접점)\nLD X0\nOR M0\nANI X1\nANI X2\nOUT M0\n\nLD M0\nOUT Y22\n\n; ── 운전 중이면 컨베이어 ──\nLD M0\nOUT Y20\n\n; ── 기동하면 바로 한 개, 그 뒤 2초마다 한 개 투입 ──\nLDP M0\nOUT Y27\nLD M0\nANI T5\nOUT T5 K20\nLD T5\nOR Y27\nOUT Y26\nEND",
   "test": "START=1 -> Y22=1 Y20=1 CV1=1\nt=2.1 -> CV1=2\nSTOP=1 -> Y20=0 Y22=0",
   "monitor": "M0 Y20 T5"
  },
@@ -3386,8 +3387,8 @@
   "title": "입구 센서로 전체 수량 세기",
   "desc": "제품이 입구 센서를 지날 때마다 표시기의 숫자가 올라갑니다. LDP(상승 펄스) 를 쓰는 것이 중요합니다 — LD X10 으로 쓰면 센서가 켜져 있는 매 스캔마다 숫자가 올라갑니다 (5장 · 7장).",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nCONV CV1 run=Y20 feed=Y26 sens=X10@0.15,X11@0.6 senA=X12@0.4 push=CYL1@0.6 len=4 mix=1 end=drop label=컨베이어\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=0.4 label=푸셔\nLAMP RUNL Y22 color=green label=운전등\nLAMP DONEL Y23 color=blue label=완료등\nSEG7 DP1 Y30 digits=3 label=A 제품 수",
-  "program": "LD X0\nOR M0\nAND X1\nAND X2\nOUT M0\nLD M0\nOUT Y22\nLD M0\nOUT Y20\n\nLDP M0\nOUT Y27\nLD M0\nANI T5\nOUT T5 K20\nLD T5\nOR Y27\nOUT Y26\n\n; ── 입구 센서가 켜질 때마다 +1 ──\n@X10 입구 센서\nLDP X10\nINC D10\n\n; ── 수량을 7세그먼트 표시기에 ──\nLD SM400\nBCD D10 K3Y30\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nCONV CV1 run=Y20 feed=Y26 sens=X10@0.15,X11@0.6 senA=X12@0.4 push=CYL1@0.6 len=4 mix=1 end=drop label=컨베이어\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=0.4 label=푸셔\nLAMP RUNL Y22 color=green label=운전등\nLAMP DONEL Y23 color=blue label=완료등\nSEG7 DP1 Y30 digits=3 label=A 제품 수",
+  "program": "LD X0\nOR M0\nANI X1\nANI X2\nOUT M0\nLD M0\nOUT Y22\nLD M0\nOUT Y20\n\nLDP M0\nOUT Y27\nLD M0\nANI T5\nOUT T5 K20\nLD T5\nOR Y27\nOUT Y26\n\n; ── 입구 센서가 켜질 때마다 +1 ──\n@X10 입구 센서\nLDP X10\nINC D10\n\n; ── 수량을 7세그먼트 표시기에 ──\nLD SM400\nBCD D10 K3Y30\nEND",
   "test": "START=1 -> D10=0\nt=1 -> D10=1 DP1=1\nt=2 -> D10=2 DP1=2\nSTOP=1 -> Y20=0",
   "monitor": "X10 D10"
  },
@@ -3400,8 +3401,8 @@
   "title": "판별 → 정지 → 푸셔",
   "desc": "A 제품이 오면 컨베이어가 멈추고 푸셔가 밀어낸 뒤 다시 돕니다. B 제품은 그냥 지나갑니다. 판별 센서와 푸셔 위치가 다르므로 M1 에 \"A 제품이 오고 있다\"를 기억해 둡니다. M2(분류 중)가 ON 이면 컨베이어가 멈춥니다 — ANI M2 한 줄로 해결됩니다. 푸셔는 편솔(sin…",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nCONV CV1 run=Y20 feed=Y26 sens=X10@0.15,X11@0.6 senA=X12@0.4 push=CYL1@0.6 len=4 mix=1 end=drop label=컨베이어\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=0.4 label=푸셔\nLAMP RUNL Y22 color=green label=운전등\nLAMP DONEL Y23 color=blue label=완료등\nSEG7 DP1 Y30 digits=3 label=A 제품 수",
-  "program": "LD X0\nOR M0\nAND X1\nAND X2\nOUT M0\nLD M0\nOUT Y22\n\n; ── 분류 중에는 컨베이어를 멈춘다 ──\nLD M0\nANI M2\nOUT Y20\n\nLDP M0\nOUT Y27\nLD M0\nANI T5\nOUT T5 K20\nLD T5\nOR Y27\nOUT Y26\n\nLDP X10\nINC D10\n\n; ── A 제품이 판별 센서를 지나면 기억해 둔다 ──\n@X12 판별 센서 (A 제품)\nLDP X12\nSET M1\n\n; ── 푸셔 앞에 도착 + A 제품이면 분류 시작 ──\n@X11 푸셔 앞 센서\nLD X11\nAND M1\nSET M2\n\n; ── 분류 중이면 푸셔 전진 (전진 끝에서 멈춤) ──\nLD M2\nANI X4\nOUT Y21\n\n; ── 전진 끝이면 A 제품 수를 세고 초기화 ──\n@X4 푸셔 전진끝\nLDP X4\nINC D11\n\nLD X4\nRST M2\nLD X4\nRST M1\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nCONV CV1 run=Y20 feed=Y26 sens=X10@0.15,X11@0.6 senA=X12@0.4 push=CYL1@0.6 len=4 mix=1 end=drop label=컨베이어\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=0.4 label=푸셔\nLAMP RUNL Y22 color=green label=운전등\nLAMP DONEL Y23 color=blue label=완료등\nSEG7 DP1 Y30 digits=3 label=A 제품 수",
+  "program": "LD X0\nOR M0\nANI X1\nANI X2\nOUT M0\nLD M0\nOUT Y22\n\n; ── 분류 중에는 컨베이어를 멈춘다 ──\nLD M0\nANI M2\nOUT Y20\n\nLDP M0\nOUT Y27\nLD M0\nANI T5\nOUT T5 K20\nLD T5\nOR Y27\nOUT Y26\n\nLDP X10\nINC D10\n\n; ── A 제품이 판별 센서를 지나면 기억해 둔다 ──\n@X12 판별 센서 (A 제품)\nLDP X12\nSET M1\n\n; ── 푸셔 앞에 도착 + A 제품이면 분류 시작 ──\n@X11 푸셔 앞 센서\nLD X11\nAND M1\nSET M2\n\n; ── 분류 중이면 푸셔 전진 (전진 끝에서 멈춤) ──\nLD M2\nANI X4\nOUT Y21\n\n; ── 전진 끝이면 A 제품 수를 세고 초기화 ──\n@X4 푸셔 전진끝\nLDP X4\nINC D11\n\nLD X4\nRST M2\nLD X4\nRST M1\nEND",
   "test": "START=1 -> D10=0 Y20=1\nt=1 -> D10=1\nt=2 -> D11=1 CYL1=ret\nt=6 -> D11>=2 D10>=3",
   "monitor": "M1 M2 X11 D11"
  },
@@ -3414,8 +3415,8 @@
   "title": "완성 프로그램",
   "desc": "운전 중에 비상정지 를 눌러 보세요. 컨베이어와 푸셔가 즉시 멈추고, 푸셔는 스프링으로 복귀합니다. 다시 기동하면 멈춘 자리에서 이어서 동작합니다.- D10 D11 D12 는 D12 = D10 − D11 입니다 (10장). 전체에서 A 를 빼면 B 제품 수가 됩니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nCONV CV1 run=Y20 feed=Y26 sens=X10@0.15,X11@0.6 senA=X12@0.4 push=CYL1@0.6 len=4 mix=1 end=drop label=컨베이어\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=0.4 label=푸셔\nLAMP RUNL Y22 color=green label=운전등\nLAMP DONEL Y23 color=blue label=완료등\nSEG7 DP1 Y30 digits=3 label=A 제품 수",
-  "program": "; ── 운전 · 정지 · 비상정지 ──\nLD X0\nOR M0\nAND X1\nAND X2\nOUT M0\nLD M0\nOUT Y22\n\n; ── 컨베이어 (분류 중에는 멈춘다) ──\nLD M0\nANI M2\nOUT Y20\n\n; ── 제품 투입 ──\nLDP M0\nOUT Y27\nLD M0\nANI T5\nOUT T5 K20\nLD T5\nOR Y27\nOUT Y26\n\n; ── 입구 센서: 전체 수량 ──\nLDP X10\nINC D10\n\n; ── A 제품 감지 기억 ──\nLDP X12\nSET M1\n\n; ── 푸셔 앞 도착 + A 제품 → 분류 시작 (운전 중에만) ──\nLD X11\nAND M1\nAND M0\nSET M2\n\n; ── 푸셔 전진 (정지하면 바로 복귀) ──\nLD M2\nANI X4\nAND M0\nOUT Y21\n\nLDP X4\nINC D11\n\nLD X4\nRST M2\nLD X4\nRST M1\n\n; ── B 제품 수 = 전체 − A ──\nLD SM400\n- D10 D11 D12\n\n; ── A 제품 수 표시 ──\nLD SM400\nBCD D11 K3Y30\n\n; ── 정지하면 분류 상태 초기화 ──\nLDF M0\nRST M2\nLDF M0\nRST M1\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nCONV CV1 run=Y20 feed=Y26 sens=X10@0.15,X11@0.6 senA=X12@0.4 push=CYL1@0.6 len=4 mix=1 end=drop label=컨베이어\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=0.4 label=푸셔\nLAMP RUNL Y22 color=green label=운전등\nLAMP DONEL Y23 color=blue label=완료등\nSEG7 DP1 Y30 digits=3 label=A 제품 수",
+  "program": "; ── 운전 · 정지 · 비상정지 ──\nLD X0\nOR M0\nANI X1\nANI X2\nOUT M0\nLD M0\nOUT Y22\n\n; ── 컨베이어 (분류 중에는 멈춘다) ──\nLD M0\nANI M2\nOUT Y20\n\n; ── 제품 투입 ──\nLDP M0\nOUT Y27\nLD M0\nANI T5\nOUT T5 K20\nLD T5\nOR Y27\nOUT Y26\n\n; ── 입구 센서: 전체 수량 ──\nLDP X10\nINC D10\n\n; ── A 제품 감지 기억 ──\nLDP X12\nSET M1\n\n; ── 푸셔 앞 도착 + A 제품 → 분류 시작 (운전 중에만) ──\nLD X11\nAND M1\nAND M0\nSET M2\n\n; ── 푸셔 전진 (정지하면 바로 복귀) ──\nLD M2\nANI X4\nAND M0\nOUT Y21\n\nLDP X4\nINC D11\n\nLD X4\nRST M2\nLD X4\nRST M1\n\n; ── B 제품 수 = 전체 − A ──\nLD SM400\n- D10 D11 D12\n\n; ── A 제품 수 표시 ──\nLD SM400\nBCD D11 K3Y30\n\n; ── 정지하면 분류 상태 초기화 ──\nLDF M0\nRST M2\nLDF M0\nRST M1\nEND",
   "test": "START=1 -> Y22=1 Y20=1\nt=1 -> D10=1\nt=2 -> D11=1 DP1=1\nt=6 -> D11>=2 D12>=1\nSTOP=1 -> Y20=0 Y21=0 M2=0",
   "monitor": "D10 D11 D12 M2"
  },
@@ -3428,7 +3429,7 @@
   "title": "온도와 설정 온도 읽기",
   "desc": "조작판의 설정 온도 손잡이를 돌리면 D5(목표 ℃)가 바뀝니다. 히터 의 온도계를 보면 D3 와 같은 값입니다./ D2 K20 D3 은 몫을 D3, 나머지를 D4 에 넣습니다 — 나눗셈은 연속된 두 워드 를 쓴다는 것을 잊지 마세요 (10장).",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nPB RSTB X3 label=경보 리셋 color=yellow\nTANK TK1 in=Y20 out=Y21 hi=X10 lo=X11 ad=1 fill=30 drain=25 level=0 label=도금조\nOVEN HT1 heat=Y22 ad=2 fan=Y23 temp=20 label=히터\nPOT VR1 ad=3 val=20 label=설정 온도\nLAMP RUNL Y24 color=green label=운전등\nLAMP DONEL Y25 color=blue label=완료등\nBUZ BZ1 Y2F label=경보 부저\nSEG7 DP1 Y30 digits=2 label=현재 스텝",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nPB RSTB X3 label=경보 리셋 color=yellow\nTANK TK1 in=Y20 out=Y21 hi=X10 lo=X11 ad=1 fill=30 drain=25 level=0 label=도금조\nOVEN HT1 heat=Y22 ad=2 fan=Y23 temp=20 label=히터\nPOT VR1 ad=3 val=20 label=설정 온도\nLAMP RUNL Y24 color=green label=운전등\nLAMP DONEL Y25 color=blue label=완료등\nBUZ BZ1 Y2F label=경보 부저\nSEG7 DP1 Y30 digits=2 label=현재 스텝",
   "program": "; ── A/D 값을 읽어 ℃ 로 바꾼다 ──\n@D2 온도 디지털값\n@D3 현재 온도 ℃\nLD SM400\nMOV U4\\G12 D2\nMOV U4\\G13 D1\n/ D2 K20 D3\n/ D1 K20 D5\nEND",
   "test": "t=0.5 -> D3=20 D5=40\nVR1=50 -> D5=100\nHT1=80 -> D3>=79",
   "monitor": "D2 D3 D1 D5"
@@ -3442,8 +3443,8 @@
   "title": "스텝 1 → 2",
   "desc": "기동하면 탱크가 차오르고(스텝 1), 만수위가 되면 히터가 켜집니다(스텝 2). 목표 온도(기본 40℃)에 닿으면 히터가 꺼지고 스텝 3 으로 넘어갑니다. 히터 출력은 한 곳에만 씁니다 — 스텝 2 와 3 을 OR= 로 묶어 이중 코일 을 피했습니다 (3장). AND — 현재 온도가 …",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nPB RSTB X3 label=경보 리셋 color=yellow\nTANK TK1 in=Y20 out=Y21 hi=X10 lo=X11 ad=1 fill=30 drain=25 level=0 label=도금조\nOVEN HT1 heat=Y22 ad=2 fan=Y23 temp=20 label=히터\nPOT VR1 ad=3 val=20 label=설정 온도\nLAMP RUNL Y24 color=green label=운전등\nLAMP DONEL Y25 color=blue label=완료등\nBUZ BZ1 Y2F label=경보 부저\nSEG7 DP1 Y30 digits=2 label=현재 스텝",
-  "program": "; ── A/D 읽기 ──\nLD SM400\nMOV U4\\G12 D2\nMOV U4\\G13 D1\n/ D2 K20 D3\n/ D1 K20 D5\n\n; ── 운전 · 정지 ──\nLD X0\nOR M0\nAND X1\nAND X2\nOUT M0\nLD M0\nOUT Y24\n\nLDP M0\nMOV K1 D0\nLDF M0\nMOV K0 D0\n\n; ── 스텝 1: 급수 (만수위까지) ──\n@X10 만수위 플로트\nLD= D0 K1\nANI X10\nOUT Y20\nLD= D0 K1\nAND X10\nMOV K2 D0\n\n; ── 스텝 2: 가열 (목표 온도까지) ──\nLD= D0 K2\nAND>= D3 D5\nMOV K3 D0\n\n; ── 히터: 스텝 2 · 3 에서 온도가 목표보다 낮으면 ──\nLD= D0 K2\nOR= D0 K3\nAND< D3 D5\nOUT Y22\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nPB RSTB X3 label=경보 리셋 color=yellow\nTANK TK1 in=Y20 out=Y21 hi=X10 lo=X11 ad=1 fill=30 drain=25 level=0 label=도금조\nOVEN HT1 heat=Y22 ad=2 fan=Y23 temp=20 label=히터\nPOT VR1 ad=3 val=20 label=설정 온도\nLAMP RUNL Y24 color=green label=운전등\nLAMP DONEL Y25 color=blue label=완료등\nBUZ BZ1 Y2F label=경보 부저\nSEG7 DP1 Y30 digits=2 label=현재 스텝",
+  "program": "; ── A/D 읽기 ──\nLD SM400\nMOV U4\\G12 D2\nMOV U4\\G13 D1\n/ D2 K20 D3\n/ D1 K20 D5\n\n; ── 운전 · 정지 ──\nLD X0\nOR M0\nANI X1\nANI X2\nOUT M0\nLD M0\nOUT Y24\n\nLDP M0\nMOV K1 D0\nLDF M0\nMOV K0 D0\n\n; ── 스텝 1: 급수 (만수위까지) ──\n@X10 만수위 플로트\nLD= D0 K1\nANI X10\nOUT Y20\nLD= D0 K1\nAND X10\nMOV K2 D0\n\n; ── 스텝 2: 가열 (목표 온도까지) ──\nLD= D0 K2\nAND>= D3 D5\nMOV K3 D0\n\n; ── 히터: 스텝 2 · 3 에서 온도가 목표보다 낮으면 ──\nLD= D0 K2\nOR= D0 K3\nAND< D3 D5\nOUT Y22\nEND",
   "test": "START=1 -> D0=1 Y20=1 Y24=1\nt=3 -> D0=2 TK1>79 Y22=1\nt=8 -> D0=3 D3>=39",
   "monitor": "D0 TK1 D3 D5"
  },
@@ -3456,8 +3457,8 @@
   "title": "스텝 3 → 4 → 5",
   "desc": "가열이 끝나면 5초 동안 도금하고(스텝 3), 배수 밸브와 냉각팬이 동작합니다(스텝 4). 탱크가 비면 완료등 이 켜집니다.스텝 4 의 종료 조건이 ANI X11(저수위가 꺼지면)인 것에 주의하세요. 플로트 스위치는 그 수위 이상이면 ON 입니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nPB RSTB X3 label=경보 리셋 color=yellow\nTANK TK1 in=Y20 out=Y21 hi=X10 lo=X11 ad=1 fill=30 drain=25 level=0 label=도금조\nOVEN HT1 heat=Y22 ad=2 fan=Y23 temp=20 label=히터\nPOT VR1 ad=3 val=20 label=설정 온도\nLAMP RUNL Y24 color=green label=운전등\nLAMP DONEL Y25 color=blue label=완료등\nBUZ BZ1 Y2F label=경보 부저\nSEG7 DP1 Y30 digits=2 label=현재 스텝",
-  "program": "LD SM400\nMOV U4\\G12 D2\nMOV U4\\G13 D1\n/ D2 K20 D3\n/ D1 K20 D5\n\nLD X0\nOR M0\nAND X1\nAND X2\nOUT M0\nLD M0\nOUT Y24\n\nLDP M0\nMOV K1 D0\nLDF M0\nMOV K0 D0\n\nLD= D0 K1\nANI X10\nOUT Y20\nLD= D0 K1\nAND X10\nMOV K2 D0\n\nLD= D0 K2\nAND>= D3 D5\nMOV K3 D0\n\nLD= D0 K2\nOR= D0 K3\nAND< D3 D5\nOUT Y22\n\n; ── 스텝 3: 도금 5초 ──\nLD= D0 K3\nOUT T0 K50\nLD T0\nMOV K4 D0\n\n; ── 스텝 4: 배수 + 냉각팬 ──\n@X11 저수위 플로트\nLD= D0 K4\nAND X11\nOUT Y21\nLD= D0 K4\nOUT Y23\nLD= D0 K4\nANI X11\nMOV K5 D0\n\n; ── 스텝 5: 완료 ──\nLD= D0 K5\nOUT Y25\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nPB RSTB X3 label=경보 리셋 color=yellow\nTANK TK1 in=Y20 out=Y21 hi=X10 lo=X11 ad=1 fill=30 drain=25 level=0 label=도금조\nOVEN HT1 heat=Y22 ad=2 fan=Y23 temp=20 label=히터\nPOT VR1 ad=3 val=20 label=설정 온도\nLAMP RUNL Y24 color=green label=운전등\nLAMP DONEL Y25 color=blue label=완료등\nBUZ BZ1 Y2F label=경보 부저\nSEG7 DP1 Y30 digits=2 label=현재 스텝",
+  "program": "LD SM400\nMOV U4\\G12 D2\nMOV U4\\G13 D1\n/ D2 K20 D3\n/ D1 K20 D5\n\nLD X0\nOR M0\nANI X1\nANI X2\nOUT M0\nLD M0\nOUT Y24\n\nLDP M0\nMOV K1 D0\nLDF M0\nMOV K0 D0\n\nLD= D0 K1\nANI X10\nOUT Y20\nLD= D0 K1\nAND X10\nMOV K2 D0\n\nLD= D0 K2\nAND>= D3 D5\nMOV K3 D0\n\nLD= D0 K2\nOR= D0 K3\nAND< D3 D5\nOUT Y22\n\n; ── 스텝 3: 도금 5초 ──\nLD= D0 K3\nOUT T0 K50\nLD T0\nMOV K4 D0\n\n; ── 스텝 4: 배수 + 냉각팬 ──\n@X11 저수위 플로트\nLD= D0 K4\nAND X11\nOUT Y21\nLD= D0 K4\nOUT Y23\nLD= D0 K4\nANI X11\nMOV K5 D0\n\n; ── 스텝 5: 완료 ──\nLD= D0 K5\nOUT Y25\nEND",
   "test": "START=1 -> D0=1 Y20=1\nt=3 -> D0=2 TK1>79\nt=8 -> D0=3\nt=4 -> D0=4 Y21=1 Y23=1\nt=3 -> D0=5 Y25=1 TK1<20",
   "monitor": "D0 T0 TK1 Y25"
  },
@@ -3470,10 +3471,53 @@
   "title": "완성 프로그램",
   "desc": "완성입니다. 표시기에 현재 스텝이 표시되고, 가열이 30초를 넘으면 경보가 울립니다. 경보를 시험해 보려면 설정 온도 손잡이를 80% 이상 으로 올려 보세요. 히터가 30초 안에 도달하지 못해 경보가 울리고 공정이 멈춥니다. 경보 리셋 버튼으로 해제합니다.",
   "rack": "",
-  "io": "PB START X0 label=기동 color=green\nPB STOP X1 nc=1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nPB RSTB X3 label=경보 리셋 color=yellow\nTANK TK1 in=Y20 out=Y21 hi=X10 lo=X11 ad=1 fill=30 drain=25 level=0 label=도금조\nOVEN HT1 heat=Y22 ad=2 fan=Y23 temp=20 label=히터\nPOT VR1 ad=3 val=20 label=설정 온도\nLAMP RUNL Y24 color=green label=운전등\nLAMP DONEL Y25 color=blue label=완료등\nBUZ BZ1 Y2F label=경보 부저\nSEG7 DP1 Y30 digits=2 label=현재 스텝",
-  "program": "; ── A/D 읽기 ──\nLD SM400\nMOV U4\\G12 D2\nMOV U4\\G13 D1\n/ D2 K20 D3\n/ D1 K20 D5\n\n; ── 운전 · 정지 (경보 중에는 운전 불가) ──\n@M9 가열 이상 경보\nLD X0\nOR M0\nAND X1\nAND X2\nANI M9\nOUT M0\nLD M0\nOUT Y24\n\nLDP M0\nMOV K1 D0\nLDF M0\nMOV K0 D0\n\n; ── 스텝 1: 급수 ──\nLD= D0 K1\nANI X10\nOUT Y20\nLD= D0 K1\nAND X10\nMOV K2 D0\n\n; ── 스텝 2: 가열 ──\nLD= D0 K2\nAND>= D3 D5\nMOV K3 D0\n\nLD= D0 K2\nOR= D0 K3\nAND< D3 D5\nOUT Y22\n\n; ── 스텝 3: 도금 5초 ──\nLD= D0 K3\nOUT T0 K50\nLD T0\nMOV K4 D0\n\n; ── 스텝 4: 배수 · 냉각 ──\nLD= D0 K4\nAND X11\nOUT Y21\nLD= D0 K4\nOUT Y23\nLD= D0 K4\nANI X11\nMOV K5 D0\n\n; ── 스텝 5: 완료 ──\nLD= D0 K5\nOUT Y25\n\n; ── 경보: 가열이 30초를 넘으면 ──\nLD= D0 K2\nOUT T1 K300\nLD T1\nSET M9\nLD M9\nOUT Y2F\n@X3 경보 리셋\nLDP X3\nRST M9\n\n; ── 현재 스텝 표시 ──\nLD SM400\nBCD D0 K2Y30\nEND",
+  "io": "PB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nEMG EMG1 X2 label=비상정지\nPB RSTB X3 label=경보 리셋 color=yellow\nTANK TK1 in=Y20 out=Y21 hi=X10 lo=X11 ad=1 fill=30 drain=25 level=0 label=도금조\nOVEN HT1 heat=Y22 ad=2 fan=Y23 temp=20 label=히터\nPOT VR1 ad=3 val=20 label=설정 온도\nLAMP RUNL Y24 color=green label=운전등\nLAMP DONEL Y25 color=blue label=완료등\nBUZ BZ1 Y2F label=경보 부저\nSEG7 DP1 Y30 digits=2 label=현재 스텝",
+  "program": "; ── A/D 읽기 ──\nLD SM400\nMOV U4\\G12 D2\nMOV U4\\G13 D1\n/ D2 K20 D3\n/ D1 K20 D5\n\n; ── 운전 · 정지 (경보 중에는 운전 불가) ──\n@M9 가열 이상 경보\nLD X0\nOR M0\nANI X1\nANI X2\nANI M9\nOUT M0\nLD M0\nOUT Y24\n\nLDP M0\nMOV K1 D0\nLDF M0\nMOV K0 D0\n\n; ── 스텝 1: 급수 ──\nLD= D0 K1\nANI X10\nOUT Y20\nLD= D0 K1\nAND X10\nMOV K2 D0\n\n; ── 스텝 2: 가열 ──\nLD= D0 K2\nAND>= D3 D5\nMOV K3 D0\n\nLD= D0 K2\nOR= D0 K3\nAND< D3 D5\nOUT Y22\n\n; ── 스텝 3: 도금 5초 ──\nLD= D0 K3\nOUT T0 K50\nLD T0\nMOV K4 D0\n\n; ── 스텝 4: 배수 · 냉각 ──\nLD= D0 K4\nAND X11\nOUT Y21\nLD= D0 K4\nOUT Y23\nLD= D0 K4\nANI X11\nMOV K5 D0\n\n; ── 스텝 5: 완료 ──\nLD= D0 K5\nOUT Y25\n\n; ── 경보: 가열이 30초를 넘으면 ──\nLD= D0 K2\nOUT T1 K300\nLD T1\nSET M9\nLD M9\nOUT Y2F\n@X3 경보 리셋\nLDP X3\nRST M9\n\n; ── 현재 스텝 표시 ──\nLD SM400\nBCD D0 K2Y30\nEND",
   "test": "START=1 -> D0=1 Y20=1 Y24=1 DP1=1\nt=3 -> D0=2 Y22=1 TK1>79\nt=8 -> D0=3 D3>=39\nt=4 -> D0=4 Y21=1 Y23=1\nt=3 -> D0=5 Y25=1 TK1<20\nSTOP=1 -> D0=0 Y24=0 Y25=0",
   "monitor": "D0 T1 M9 Y2F"
+ }
+];
+  /* 기본 예제 (samples.js) 도 같은 배선으로 바꾼 것 */
+  PLC.SAMPLES = [
+ {
+  "title": "자기유지 (기동 · 정지)",
+  "desc": "가장 기본이 되는 ON/OFF 유지 회로",
+  "project": "[title]\n자기유지 (기동 · 정지)\n\n[io]\nPB START X0 label=기동 color=green\nPB STOP X1 label=정지 color=red\nLAMP RUN Y20 color=green label=운전등\n\n[program]\n; 기동 버튼으로 켜고, 정지 버튼(b접점)으로 끈다\nLD X0\nOR Y20\nANI X1\nOUT Y20\nEND\n\n[test]\nSTART=1 -> Y20=1\nSTART=0 -> Y20=1\nSTOP=1 -> Y20=0\n"
+ },
+ {
+  "title": "타이머 플리커 (깜빡임)",
+  "desc": "타이머 두 개로 1초 점멸",
+  "project": "[title]\n타이머 플리커 (깜빡임)\n\n[io]\nSEL SW1 X0 label=운전 스위치\nLAMP L1 Y20 color=yellow label=점멸등\n\n[program]\n; T0 · T1 이 서로를 켜고 끄며 1초씩 점멸한다\nLD X0\nANI T1\nOUT T0 K10\nLD T0\nOUT T1 K10\nLD T0\nANI T1\nOUT Y20\nEND\n\n[test]\nSW1=1 t=1.2 -> Y20=1\nt=1.1 -> Y20=0\n"
+ },
+ {
+  "title": "1 버튼 ON/OFF (플립플롭)",
+  "desc": "버튼 하나를 누를 때마다 켜짐 ↔ 꺼짐",
+  "project": "[title]\n1 버튼 ON/OFF (플립플롭)\n\n[io]\nPB PB1 X0 label=전환 버튼\nLAMP L1 Y20 color=blue label=램프\n\n[program]\n; 상승 펄스로 한 번만 반전시킨다\nLDP X0\nFF Y20\nEND\n\n[test]\nPB1=1 scan=2 -> Y20=1\nPB1=0 -> Y20=1\nPB1=1 scan=2 -> Y20=0\n"
+ },
+ {
+  "title": "실린더 왕복 (편솔)",
+  "desc": "전진끝에서 1초 쉬었다가 후진하는 1회 왕복",
+  "project": "[title]\n실린더 왕복 (편솔)\n\n[io]\nPB START X0 label=기동\nPB STOP X1 label=정지\nCYL CYL1 sol=Y21 ext=X4 ret=X5 time=1 label=실린더\nLAMP RUN Y20 color=green label=전진 중\n\n[program]\n; 기동하면 전진, 전진끝(X4)에서 1초 뒤 후진\nLD X0\nOR Y21\nANI T0\nANI X1\nOUT Y21\n\nLD X4\nOUT T0 K10\n\nLD Y21\nOUT Y20\nEND\n\n[test]\nSTART=1 scan=2 -> Y21=1\nSTART=0 t=1.3 -> CYL1=ext Y21=1\nt=1.0 -> Y21=0\nt=1.5 -> CYL1=ret\n"
+ },
+ {
+  "title": "컨베이어 제품 계수",
+  "desc": "광전 센서로 제품을 세고 10개마다 정지",
+  "project": "[title]\n컨베이어 제품 계수\n\n[io]\nSEL RUN1 X0 label=운전\nCONV CV1 run=Y24 sens=X10@0.9 len=2 label=컨베이어\nLAMP DONE Y22 color=yellow label=완료등\nPB RST1 X2 label=리셋\n\n[program]\n; 광전 센서 상승 에지마다 카운트\nLD X0\nANI C0\nOUT Y24\n\nLDP X10\nOUT C0 K10\n\nLD C0\nOUT Y22\n\nLD X2\nRST C0\nEND\n\n[test]\nRUN1=1 CV1=1 t=2.2 -> CN0=1\nRST1=1 -> CN0=0\n"
+ },
+ {
+  "title": "A/D → D/A 아날로그 연동",
+  "desc": "포텐셔미터 값을 읽어 모터 속도와 미터로 출력",
+  "project": "[title]\nA/D → D/A 아날로그 연동\n\n[io]\nPOT VR1 ad=1 val=50 label=속도 설정\nMETER MT1 da=1 scale=0-100 label=속도계\nMOTOR M1 fwd=Y22 da=1 label=DC 모터\nSEL RUN1 X0 label=운전\n\n[program]\n; A/D CH1 디지털값(0~4000) 을 그대로 D/A CH1 로 보낸다\nLD SM400\nMOV U4\\G11 D0\nMOV D0 U5\\G1\n\n; D/A CH1 출력 허가 · 모터 운전\nLD SM400\nOUT Y51\nLD X0\nOUT Y22\nEND\n\n[test]\nt=0.5 -> D0=2000 DA1=5\nVR1=100 t=0.3 -> DA1=10\nRUN1=1 t=1 -> M1>2500\n"
+ },
+ {
+  "title": "시리얼 통신 (무수순)",
+  "desc": "QJ71C24N 으로 터미널에 글자를 보내고 받기",
+  "project": "[title]\n시리얼 통신 (무수순)\n\n[io]\nTERM PC1 port=CH1 label=PC 터미널\nPB SEND X0 label=송신\n\n[program]\n; 송신: 제어 데이터 (CH1 · 7바이트) + \"HELLO\"\nLD SM400\nMOV K1 D100\nMOV K7 D102\n$MOV \"HELLO\" D110\n\nLDP X0\nG.OUTPUT U6 D100 D110 M10\n\n; 수신: 읽기 요구(X63) 가 오면 받아서 D130 에 저장\nLD X63\nMOV K1 D120\nMOV K16 D123\nG.INPUT U6 D120 D130 M20\nEND\n\n[test]\nSEND=1 t=0.3 -> PC1~HELLO\nPC1=\"ABC\" t=0.3 -> D122=5\n"
+ },
+ {
+  "title": "물탱크 수위 제어",
+  "desc": "플로트 스위치와 A/D 수위로 급수 · 배수 제어",
+  "project": "[title]\n물탱크 수위 제어\n\n[io]\nTANK TK1 in=Y25 out=Y26 hi=X12 lo=X13 ad=3 level=10 fill=25 drain=20 label=물탱크\nSEL AUTO X0 label=자동\nLAMP HI Y20 color=red label=만수위\nPB DRAIN X1 label=배수\n\n[program]\n; 하한 이하면 급수, 상한이면 급수 정지 (자기유지)\nLD X0\nANI X13\nOR Y25\nANI X12\nAND X0\nOUT Y25\n\nLD X12\nOUT Y20\n\nLD X1\nOUT Y26\nEND\n\n[test]\nAUTO=1 t=0.5 -> Y25=1 TK1>10\nt=3 -> X12=1 Y25=0 Y20=1\nDRAIN=1 t=2 -> Y26=1 TK1<80\n"
  }
 ];
 })(typeof window !== 'undefined' ? window : globalThis);

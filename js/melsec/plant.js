@@ -39,7 +39,7 @@
   // ---------------------------------------------------------------- 입력 장비
   T.PB = {
     name: '푸시 버튼', cat: 'in', main: 'x', keys: { x: 'x' },
-    help: 'PB 이름 X0 [nc=1] [color=green|red|yellow|blue|black|white] [label=표시]',
+    help: 'PB 이름 X0 [color=green|red|yellow|blue|black|white] [label=표시] — 누르는 동안 ON (정지는 래더에서 b 접점으로) · nc=1 이면 b 접점 배선(평소 ON, 누르면 OFF)',
     init(d) { d.on = 0; },
     inputs(d) { return [[d.x, d.p.nc === '1' ? (d.on ? 0 : 1) : d.on]]; },
     set(d, v) { d.on = v ? 1 : 0; }, get(d) { return d.on; }
@@ -54,9 +54,9 @@
   T.TGL = Object.assign({}, T.SEL, { name: '토글 스위치', help: 'TGL 이름 X3 [on=1] [label=표시]' });
   T.EMG = {
     name: '비상 정지', cat: 'in', main: 'x', keys: { x: 'x' },
-    help: 'EMG 이름 X1 — b 접점 (평소 ON, 누르면 OFF · 눌린 채 유지, 다시 누르면 해제)',
+    help: 'EMG 이름 X1 [nc=1] — 누르면 ON (눌린 채 유지, 다시 누르면 해제) · 래더에서는 b 접점으로 끊는다 · nc=1 이면 b 접점 배선(평소 ON, 누르면 OFF)',
     init(d) { d.on = 0; },
-    inputs(d) { return [[d.x, d.on ? 0 : 1]]; },
+    inputs(d) { return [[d.x, d.p.nc === '1' ? (d.on ? 0 : 1) : d.on]]; },
     set(d, v) { d.on = v ? 1 : 0; }, get(d) { return d.on; }
   };
   T.LS = {

@@ -27,6 +27,7 @@ let total = 0, bad = 0;
   const PLC = loadEngine(vendor);
   const items = [];
   (PLC.SAMPLES || []).forEach((s) => { const p = PLC.parseProject(s.project); items.push(Object.assign({ title: '[기본] ' + s.title }, p)); });
+  items.push(Object.assign({ title: '[새 프로그램]' }, PLC.parseProject(PLC.VENDOR.defaultProject(PLC.DEFAULT_RACK))));
   (PLC.EXAMPLES || []).forEach((x) => items.push({ title: `[${x.ch}] ${x.title}`, rack: x.rack, io: x.io, program: x.program, test: x.test }));
   let ok = 0, rt = 0;
   items.forEach((it) => {

@@ -54,6 +54,31 @@ ${rack}
 
 [io]
 PB START P00000 label=기동 color=green
+PB STOP P00001 label=정지 color=red
+LAMP RUN P00020 color=green label=운전등
+
+[program]
+; 기동 · 정지 자기유지 (정지 버튼은 b 접점: 누르지 않으면 도통, 누르면 끊어짐)
+LOAD P00000
+OR P00020
+AND NOT P00001
+OUT P00020
+END
+
+[test]
+START=1 -> P00020=1
+START=0 -> P00020=1
+STOP=1 -> P00020=0
+`,
+    /** 예전(정지 버튼 b 접점 배선) 새 프로그램 — 저장된 것이 이것 그대로면 새 배선으로 바꿔 연다 */
+    legacyDefault: (rack) => `[title]
+새 프로그램
+
+[rack]
+${rack}
+
+[io]
+PB START P00000 label=기동 color=green
 PB STOP P00001 nc=1 label=정지 color=red
 LAMP RUN P00020 color=green label=운전등
 

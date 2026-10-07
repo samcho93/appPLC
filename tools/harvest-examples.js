@@ -6,6 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
+const { convert } = require('./nc-convert.js');
 
 const ROOT = path.join(__dirname, '..');
 const SRC = [
@@ -68,16 +69,59 @@ function harvest(src) {
   return out;
 }
 
+/** 이 앱의 엔진 (js/<제조사>/) — 변환한 예제를 검사식으로 확인하는 데 쓴다 */
+function loadEngine(vendor) {
+  const ctx = {
+    console, Math, Date, Map, Set, Array, Object, String, Number, JSON, Error, RegExp, TextEncoder, TextDecoder, DataView, ArrayBuffer,
+    Uint8Array, Int16Array, Int32Array, Float64Array, isFinite, parseInt, parseFloat, performance: { now: () => Date.now() }
+  };
+  ctx.globalThis = ctx;
+  vm.createContext(ctx);
+  ['core', 'modules', 'plant', 'ladder', 'sim', 'samples'].forEach((f) => vm.runInContext(fs.readFileSync(path.join(ROOT, 'js', vendor, f + '.js'), 'utf8'), ctx, { filename: f }));
+  return ctx.PLC;
+}
+/** 프로젝트가 오류 없이 검사식을 모두 통과하는가 */
+function passes(PLC, p) {
+  const sim = new PLC.Sim({ rack: p.rack, io: p.io, program: p.program });
+  if (sim.rack.errors.length || sim.plant.errors.length || sim.program.errors.length) return false;
+  try { return (p.test ? sim.runTests(p.test) : []).every((x) => x.ok); } catch (e) { return false; }
+}
+const legacyEmg = (io) => String(io || '').split('\n')
+  .map((l) => (/^\s*EMG\s/i.test(l) && !/nc=1/i.test(l) ? l.replace(/^(\s*EMG\s+\S+\s+\S+)/i, '$1 nc=1') : l)).join('\n');
+/** 스위치를 "누르면 ON" 배선으로 바꾸고(래더 접점 a ↔ b), 검사식이 통과할 때만 쓴다. 안 되면 예전 배선(EMG 는 nc=1) 유지 */
+function rewire(PLC, vendor, p, stat) {
+  const c = convert(PLC, vendor, p);
+  if (!c.changed && !c.skipped) return p;
+  const out = Object.assign({}, p, { io: c.io, program: c.program, test: c.test });
+  if (passes(PLC, out)) { if (c.changed) stat.conv++; if (c.skipped) stat.keep++; return out; }
+  stat.fail.push(p.title);
+  return Object.assign({}, p, { io: legacyEmg(p.io) });
+}
+
 SRC.forEach((src) => {
   if (!fs.existsSync(path.join(src.dir, 'lessons'))) { console.error(`건너뜀: ${src.dir} 에 lessons 폴더가 없습니다`); return; }
-  const list = harvest(src);
-  const body = `/* ${src.name} 강좌의 래더 실습 예제 — tools/harvest-examples.js 로 자동 생성 (손으로 고치지 마세요) */
+  const PLC = loadEngine(src.id);
+  const stat = { conv: 0, keep: 0, fail: [] };
+  const list = harvest(src).map((x) => Object.assign(x, rewire(PLC, src.id, x, stat)));
+  const samples = (PLC.SAMPLES || []).map((s) => {
+    const p = PLC.parseProject(s.project);
+    const q = rewire(PLC, src.id, Object.assign({}, p, { title: p.title || s.title }), stat);
+    return { title: s.title, desc: s.desc, project: PLC.buildProject(Object.assign({}, p, { io: q.io, program: q.program, test: q.test, title: p.title || s.title })) };
+  });
+  const bad = [...list, ...samples.map((s) => Object.assign({ title: s.title }, PLC.parseProject(s.project)))].filter((p) => !passes(PLC, p)).map((p) => p.title);
+  const body = `/* ${src.name} 강좌의 래더 실습 예제 — tools/harvest-examples.js 로 자동 생성 (손으로 고치지 마세요)
+ * 스위치는 "누르면 ON" 배선으로 바꿨다 (정지 · 비상정지는 래더에서 b 접점으로 끊는다) — tools/nc-convert.js */
 (function (root) {
   'use strict';
   const PLC = root.PLC = root.PLC || {};
   PLC.EXAMPLES = ${JSON.stringify(list, null, 1)};
+  /* 기본 예제 (samples.js) 도 같은 배선으로 바꾼 것 */
+  PLC.SAMPLES = ${JSON.stringify(samples, null, 1)};
 })(typeof window !== 'undefined' ? window : globalThis);
 `;
   fs.writeFileSync(path.join(ROOT, src.out), body, 'utf8');
-  console.log(`✓ ${src.out}: 예제 ${list.length}개 (${new Set(list.map((x) => x.ch)).size} 챕터)`);
+  console.log(`✓ ${src.out}: 예제 ${list.length}개 (${new Set(list.map((x) => x.ch)).size} 챕터) · 기본 ${samples.length}개`);
+  console.log(`   배선 변환 ${stat.conv} · 일부 입력은 원래 배선 유지 ${stat.keep} · 변환 실패로 원래대로 ${stat.fail.length} · 검사 실패 ${bad.length}`);
+  stat.fail.forEach((t) => console.log('   ↩', t));
+  bad.forEach((t) => console.log('   ✗', t));
 });

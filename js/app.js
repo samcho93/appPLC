@@ -29,7 +29,7 @@
     document.title = `appPLC — ${V.maker} 래더 시뮬레이터`;
     ed.panel = new PLC.MonitorPanel($('monitorHost'), { toast, onBridgeHelp: () => help('bridge'), onRack: () => switchTab('rack') });
     placeMonitor();
-    const text = fromHash() || store.get('project', '') || DEFAULT_PROJECT;
+    const text = fromHash() || migrateSaved(store.get('project', '')) || DEFAULT_PROJECT;
     open(text);
     bind();
     plantLayout();
@@ -37,6 +37,15 @@
     if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)) {
       navigator.serviceWorker.register('sw.js').catch(() => { /* 오프라인 저장 실패는 무시 */ });
     }
+  }
+  /** 예전 새 프로그램(정지 버튼을 b 접점으로 배선, 래더는 a 접점)을 손대지 않고 저장해 둔 것이면 새 배선으로 바꿔 연다 */
+  function migrateSaved(text) {
+    if (!text || !V.legacyDefault) return text;
+    const n = (s) => String(s || '').replace(/\s+/g, ' ').trim();
+    const a = PLC.parseProject(text), old = PLC.parseProject(V.legacyDefault(PLC.DEFAULT_RACK));
+    if (n(a.io) !== n(old.io) || n(a.program) !== n(old.program)) return text;
+    const neu = PLC.parseProject(DEFAULT_PROJECT);
+    return PLC.buildProject(Object.assign({}, a, { io: neu.io, program: neu.program, test: neu.test }));
   }
   function fromHash() {
     const h = location.hash.slice(1);
