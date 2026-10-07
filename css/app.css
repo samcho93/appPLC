@@ -122,6 +122,13 @@ a { color: var(--accent2); }
 .ibtn.on .k, .ibtn.dirty .k { color: inherit; opacity: .85; }
 .ibtn .t { font-size: 15px; font-weight: 800; font-family: var(--mono); letter-spacing: -.04em; }
 .ibtn svg { width: 22px; height: 22px; display: block; }
+/* 선 그림 아이콘 (글자 기호 대신 — 기기마다 글꼴 위치가 달라 들쭉날쭉하지 않게) */
+.ic { width: 22px; height: 22px; display: block; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.ic circle { fill: none; }
+@media (min-width: 600px) { .tools .ibtn:has(.k:not(:empty)) .ic { transform: translateY(-3px); } }
+.zoombar .ic { width: 18px; height: 18px; }
+.status .ic { width: 20px; height: 20px; }
+.tools .ibtn[data-tool=edit] .ic { width: 18px; height: 18px; }
 
 /* ---------------------------------------------------------------- 전체 배치 */
 .app {

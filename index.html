@@ -51,40 +51,40 @@
     <main class="main">
       <section class="pane" data-pane="ladder">
         <div class="tools" id="ldTools">
-          <button class="ibtn" data-tool="edit" title="편집 모드 켜기/끄기">✎<span class="lbl">편집</span></button>
-          <button class="ibtn" data-tool="convert" title="변환 — 고친 회로를 프로그램에 반영하고 실행">✔<span class="k" data-k="convert"></span></button>
+          <button class="ibtn" data-tool="edit" title="편집 모드 켜기/끄기"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></svg><span class="lbl">편집</span></button>
+          <button class="ibtn" data-tool="convert" title="변환 — 고친 회로를 프로그램에 반영하고 실행"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg><span class="k" data-k="convert"></span></button>
           <span class="mode" data-f="ldmode">모니터</span>
           <span class="sep"></span>
-          <button class="ibtn" data-tool="undo" title="되돌리기 (Ctrl+Z)">↶</button>
-          <button class="ibtn" data-tool="redo" title="다시 실행 (Ctrl+Y)">↷</button>
+          <button class="ibtn" data-tool="undo" title="되돌리기 (Ctrl+Z)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7H4V2M4.5 7A8.5 8.5 0 1 1 6 17"/></svg></button>
+          <button class="ibtn" data-tool="redo" title="다시 실행 (Ctrl+Y)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7h5V2M19.5 7A8.5 8.5 0 1 0 18 17"/></svg></button>
           <span class="sep"></span>
-          <button class="ibtn" data-tool="NO" title="a 접점"><span class="t">┤├</span><span class="k" data-k="NO"></span></button>
-          <button class="ibtn" data-tool="NC" title="b 접점"><span class="t">┤/├</span><span class="k" data-k="NC"></span></button>
-          <button class="ibtn" data-tool="OR" title="a 접점 병렬 (위 행과 세로선으로 잇기)"><span class="t">┤├↓</span><span class="k" data-k="OR"></span></button>
-          <button class="ibtn" data-tool="ORNC" title="b 접점 병렬"><span class="t">┤/├↓</span><span class="k" data-k="ORNC"></span></button>
-          <button class="ibtn" data-tool="P" title="상승 펄스 접점"><span class="t">┤↑├</span><span class="k" data-k="P"></span></button>
-          <button class="ibtn" data-tool="F" title="하강 펄스 접점"><span class="t">┤↓├</span><span class="k" data-k="F"></span></button>
-          <button class="ibtn" data-tool="coil" title="코일 (OUT · SET · RST · 타이머 · 카운터)"><span class="t">( )</span><span class="k" data-k="coil"></span></button>
-          <button class="ibtn" data-tool="app" title="응용 명령 (MOV · 연산 …)"><span class="t">[ ]</span><span class="k" data-k="app"></span></button>
-          <button class="ibtn" data-tool="H" title="가로선"><span class="t">—</span><span class="k" data-k="H"></span></button>
-          <button class="ibtn" data-tool="V" title="세로선 (아래 행과 잇기)"><span class="t">│</span><span class="k" data-k="V"></span></button>
+          <button class="ibtn" data-tool="NO" title="a 접점"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12h7M16 12h7M8 6v12M16 6v12"/></svg><span class="k" data-k="NO"></span></button>
+          <button class="ibtn" data-tool="NC" title="b 접점"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12h7M16 12h7M8 6v12M16 6v12M6.5 18.5l11-13"/></svg><span class="k" data-k="NC"></span></button>
+          <button class="ibtn" data-tool="OR" title="a 접점 병렬 (위 행과 세로선으로 잇기)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3v13h6M16 16h6V3M8 11v10M16 11v10"/></svg><span class="k" data-k="OR"></span></button>
+          <button class="ibtn" data-tool="ORNC" title="b 접점 병렬"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3v13h6M16 16h6V3M8 11v10M16 11v10M6.5 21.5l11-11"/></svg><span class="k" data-k="ORNC"></span></button>
+          <button class="ibtn" data-tool="P" title="상승 펄스 접점"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12h7M16 12h7M8 6v12M16 6v12M12 16V8M9.5 10.5L12 8l2.5 2.5"/></svg><span class="k" data-k="P"></span></button>
+          <button class="ibtn" data-tool="F" title="하강 펄스 접점"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12h7M16 12h7M8 6v12M16 6v12M12 8v8M9.5 13.5L12 16l2.5-2.5"/></svg><span class="k" data-k="F"></span></button>
+          <button class="ibtn" data-tool="coil" title="코일 (OUT · SET · RST · 타이머 · 카운터)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12h5M18 12h5M9 5.5a8 8 0 0 0 0 13M15 5.5a8 8 0 0 1 0 13"/></svg><span class="k" data-k="coil"></span></button>
+          <button class="ibtn" data-tool="app" title="응용 명령 (MOV · 연산 …)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12h4M19 12h4M5 6.5h14v11H5z"/></svg><span class="k" data-k="app"></span></button>
+          <button class="ibtn" data-tool="H" title="가로선"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h20"/></svg><span class="k" data-k="H"></span></button>
+          <button class="ibtn" data-tool="V" title="세로선 (아래 행과 잇기)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20"/></svg><span class="k" data-k="V"></span></button>
           <span class="sep"></span>
-          <button class="ibtn" data-tool="edit-cell" title="고른 칸 고치기 (Enter · 같은 칸 다시 탭)">✏</button>
-          <button class="ibtn" data-tool="del" title="지우기 (Del)">🗑</button>
-          <button class="ibtn" data-tool="insRow" title="행 삽입 (Insert)"><span class="t">+≡</span></button>
-          <button class="ibtn" data-tool="delRow" title="행 삭제 (Ctrl+Del)"><span class="t">−≡</span></button>
+          <button class="ibtn" data-tool="edit-cell" title="고른 칸 고치기 (Enter · 같은 칸 다시 탭)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h4l9.5-9.5-4-4L3 17zM14 6l4 4M18 2.5l3.5 3.5"/></svg></button>
+          <button class="ibtn" data-tool="del" title="지우기 (Del)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16M9 6.5V4h6v2.5M6.5 6.5l1 14h9l1-14M10 10.5v6M14 10.5v6"/></svg></button>
+          <button class="ibtn" data-tool="insRow" title="행 삽입 (Insert)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18M3 19h18M12 8.5v7M8.5 12h7"/></svg></button>
+          <button class="ibtn" data-tool="delRow" title="행 삭제 (Ctrl+Del)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18M3 19h18M8.5 12h7"/></svg></button>
           <span class="sep"></span>
-          <button class="ibtn" data-tool="copy" title="복사 (Ctrl+C)">⧉</button>
-          <button class="ibtn" data-tool="cut" title="잘라내기 (Ctrl+X)">✂</button>
-          <button class="ibtn" data-tool="paste" title="붙여넣기 (Ctrl+V)">📌</button>
+          <button class="ibtn" data-tool="copy" title="복사 (Ctrl+C)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8h12v12H8zM16 8V4H4v12h4"/></svg></button>
+          <button class="ibtn" data-tool="cut" title="잘라내기 (Ctrl+X)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 8.5L20 20M15.5 8.5L4 20"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/></svg></button>
+          <button class="ibtn" data-tool="paste" title="붙여넣기 (Ctrl+V)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H5v17h14V4h-3M8 2.5h8v4H8z"/></svg></button>
         </div>
         <div class="ladder-host">
           <div id="edLadder"></div>
           <div class="zoombar">
-            <button class="ibtn" data-tool="zoomOut" title="축소">－</button>
+            <button class="ibtn" data-tool="zoomOut" title="축소"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
             <span class="z" id="zoomVal">100%</span>
-            <button class="ibtn" data-tool="zoomIn" title="확대 (손가락 두 개로 벌리기 · Ctrl+휠)">＋</button>
-            <button class="ibtn" data-tool="zoomFit" title="화면 폭에 맞춤">⤢</button>
+            <button class="ibtn" data-tool="zoomIn" title="확대 (손가락 두 개로 벌리기 · Ctrl+휠)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg></button>
+            <button class="ibtn" data-tool="zoomFit" title="화면 폭에 맞춤"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"/></svg></button>
           </div>
         </div>
       </section>
@@ -118,8 +118,8 @@
     <!-- 상태 띠: RUN/STOP · 스캔 -->
     <div class="status" id="status">
       <button class="run off" data-act="run" title="RUN / STOP"><span class="led g" data-led="run"><i></i></span><span data-f="runtext">STOP</span></button>
-      <button class="ibtn" data-act="reset" title="CPU 리셋 (모든 디바이스 초기화)">⟲</button>
-      <button class="ibtn" data-act="step" title="1 스캔만 실행">⏭</button>
+      <button class="ibtn" data-act="reset" title="CPU 리셋 (모든 디바이스 초기화)"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6M4.6 10A8 8 0 1 1 6 17"/></svg></button>
+      <button class="ibtn" data-act="step" title="1 스캔만 실행"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5l10 7-10 7zM18 5v14"/></svg></button>
       <select data-act="speed" title="시뮬레이션 속도">
         <option value="0.1">×0.1</option><option value="0.25">×0.25</option><option value="0.5">×0.5</option>
         <option value="1" selected>×1</option><option value="2">×2</option><option value="5">×5</option>
