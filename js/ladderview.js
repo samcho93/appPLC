@@ -257,7 +257,8 @@
           const o = PLC.parseOperand(cell.e.ops[0]);
           let live = false;
           try { live = !!cpu.readBit(o); } catch (e) { /* 무시 */ }
-          el.classList.toggle('dev-on', live);
+          // 접점이 "닫혀(도통) 있는지"를 표시한다: a 접점은 디바이스 ON 일 때, b 접점은 디바이스 OFF 일 때 닫힌다
+          el.classList.toggle('dev-on', cell.e.c === 'NC' ? !live : live);
         }
         const iv = el.querySelector('.lv-inv');
         if (iv) {
